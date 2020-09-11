@@ -11,8 +11,6 @@ module.
 There are a number of utility commands being showcased here.'''
 bot = commands.Bot(command_prefix='?', description=description)
 
-
-
 @bot.event
 async def on_ready():
     print('Logged in as')

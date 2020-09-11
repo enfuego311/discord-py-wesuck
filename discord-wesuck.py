@@ -18,6 +18,16 @@ async def on_ready():
     print(bot.user.id)
     print('------')
 
+@bot.event
+async def on_message(message):
+    string1="marcus"
+    if string1.lower() in message.content.lower():
+        channel = message.channel
+        def random_line(fname):
+            lines = open(fname).read().splitlines()
+            return random.choice(lines)
+        await channel.send(random_line('discord-py-wesuck/marcus.txt'))
+
 @bot.command()
 async def add(ctx, left: int, right: int):
     """Adds two numbers together."""

@@ -12,6 +12,10 @@ module.
 There are a number of utility commands being showcased here.'''
 bot = commands.Bot(command_prefix='?', description=description)
 
+def random_line(fname):
+    lines = open(fname).read().splitlines()
+    return random.choice(lines)
+
 @bot.event
 async def on_ready():
     print('Logged in as')
@@ -21,13 +25,24 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    string1="marcus"
+    string1 = "marcus"
+    string2 = "movie night"
+    string3 = "herzog"
+    
     if string1.lower() in message.content.lower():
         channel = message.channel
-        def random_line(fname):
-            lines = open(fname).read().splitlines()
-            return random.choice(lines)
         await channel.send(random_line(os.path.join(sys.path[0], 'marcus.txt')))
+
+    
+    if string2.lower() in message.content.lower():
+        channel = message.channel
+        await channel.send(random_line(os.path.join(sys.path[0], 'movienight.txt')))
+
+    
+    if string3.lower() in message.content.lower():
+        channel = message.channel
+        await channel.send(random_line(os.path.join(sys.path[0], 'herzog.txt')))
+
 
 @bot.command()
 async def add(ctx, left: int, right: int):

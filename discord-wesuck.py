@@ -1,4 +1,5 @@
 import os
+import sys
 import discord
 from discord.ext import commands
 import random
@@ -26,7 +27,7 @@ async def on_message(message):
         def random_line(fname):
             lines = open(fname).read().splitlines()
             return random.choice(lines)
-        await channel.send(random_line('discord-py-wesuck/marcus.txt'))
+        await channel.send(random_line(os.path.join(sys.path[0], 'marcus.txt')))
 
 @bot.command()
 async def add(ctx, left: int, right: int):

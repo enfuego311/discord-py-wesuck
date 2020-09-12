@@ -14,7 +14,7 @@ description = '''An example bot to showcase the discord.ext.commands extension
 module.
 
 There are a number of utility commands being showcased here.'''
-bot = commands.Bot(command_prefix='', description=description)
+bot = commands.Bot(command_prefix='?', description=description)
 
 def random_line(fname):
     lines = open(fname).read().splitlines()
@@ -41,21 +41,36 @@ async def sgif(ctx, *, search):
 
     await ctx.send(embed=embed)
 
+@bot.command(pass_context=True)
+async def gif(ctx, *, search):
+    confilter = "low"
+    embed = discord.Embed(colour=discord.Colour.blue())
+    session = aiohttp.ClientSession()
+    search.replace(' ', '+')
+    response = await session.get('http://api.tenor.com/v1/random?key=' + tenorapi + '&q=' + search + '&contentfilter=' + confilter + '&limit=1&media_filter=minimal')
+    data = json.loads(await response.text())
+    embed.set_image(url=data['results'][0]['media'][0]['gif']['url'])
+
+    await session.close()
+
+    await ctx.send(embed=embed)
+
 @bot.event
 async def on_message(message):
-    string1 = "marcus"
-    string2 = "movie night"
-    string3 = "herzog"
+    namestr = "marcus"
+    moviestr = "movie night"
+    herzogstr = "herzog"
 
-    if string1.lower() in message.content.lower():
+
+    if namestr.lower() in message.content.lower():
         channel = message.channel
-        await channel.send(random_line(os.path.join(sys.path[0], 'marcus.txt')))
+        await channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
 
-    if string2.lower() in message.content.lower():
+    if moviestr.lower() in message.content.lower():
         channel = message.channel
         await channel.send(random_line(os.path.join(sys.path[0], 'movienight.txt')))
 
-    if string3.lower() in message.content.lower():
+    if herzogstr.lower() in message.content.lower():
         channel = message.channel
         await channel.send(random_line(os.path.join(sys.path[0], 'herzog.txt')))
 

@@ -93,63 +93,66 @@ async def weather(ctx, *, search):
     await ctx.send(embed=embed)
 
 
-# @bot.event
-# async def on_message(message):
-#     namestr = "marcus"
-#     moviestr = "movie night"
-#     herzogstr = "herzog"
-#     herstr = "amanda"
-#     kartstr = "kart"
-#     mariostr = "mario"
-#     ff2str = "ff2"
-#     coolstr = "cool"
-#     typongstr = "typong"
-#     ffstr = "final fantasy"
-#     neatostr = "neato"
+@bot.event
+async def on_message(message):
+    namestr = "marcus"
+    moviestr = "movie night"
+    herzogstr = "herzog"
+    herstr = "amanda"
+    kartstr = "kart"
+    mariostr = "mario"
+    ff2str = "ff2"
+    coolstr = "cool"
+    typongstr = "typong"
+    ffstr = "final fantasy"
+    neatostr = "neato"
 
-#     if namestr.lower() in message.content.lower():
-#         channel = message.channel
-#         await channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
+    if message.author == self.user:
+            return
 
-#     if moviestr.lower() in message.content.lower():
-#         channel = message.channel
-#         await channel.send(random_line(os.path.join(sys.path[0], 'movienight.txt')))
+    if namestr.lower() in message.content.lower():
+        channel = message.channel
+        await channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
 
-#     if herzogstr.lower() in message.content.lower():
-#         channel = message.channel
-#         await channel.send(random_line(os.path.join(sys.path[0], 'herzog.txt')))
-    
-#     if herstr.lower() in message.content.lower():
-#         channel = message.channel
-#         await channel.send("At least until operation: kill wife and kids")
+    if moviestr.lower() in message.content.lower():
+        channel = message.channel
+        await channel.send(random_line(os.path.join(sys.path[0], 'movienight.txt')))
 
-#     if kartstr.lower() in message.content.lower():
-#         channel = message.channel
-#         await channel.send("**Official We Suck Mario Kart Ranking** - 8 > SNES > 64 > 7 > Wii > GBA > DS > DD")
+    if herzogstr.lower() in message.content.lower():
+        channel = message.channel
+        await channel.send(random_line(os.path.join(sys.path[0], 'herzog.txt')))
     
-#     if mariostr.lower() in message.content.lower():
-#         channel = message.channel
-#         await channel.send("**Official We Suck Mario Ranking** - Odyssey > 64 > World 2 > 3 > World > 3D World > Galaxy > 1 > 2 > Galaxy 2 > Sunshine")
-    
-#     if ff2str.lower() in message.content.lower():
-#         channel = message.channel
-#         await channel.send("The thing about civilization is that we are all 72 hours away from pure cannibalistic anarchy. That clock gets reset everytime we eat, everytiem we sleep but all of life as know it are on a precipice. FF2 was about 48 hrs for me. Everything you know and care about means nothing. That's the reality of culture and civilzation. It's an absolute cosmic shadow held up by essentially nothing. Final fantasy 2 taught me that.")
-    
-# #    if coolstr.lower() in message.content.lower():
-# #        channel = message.channel
-# #        await channel.send("cool cool cool")
-    
-# #    if typongstr.lower() in message.content.lower():
-# #        channel = message.channel
-# #        await channel.send("Don't make fun of my typong")
-    
-#     if ffstr.lower() in message.content.lower():
-#         channel = message.channel
-#         await channel.send("**Official We Suck Final Fantasy Ranking** - FF6 > FF4 > FF7 > FF9 > FF15 > FF10 > FF12 > FF1 > FF5 > FF8 > FF3 > FF13 > FF2")
+    if herstr.lower() in message.content.lower():
+        channel = message.channel
+        await channel.send("At least until operation: kill wife and kids")
 
-# #    if neatostr.lower() in message.content.lower():
-# #        channel = message.channel
-# #        await channel.send("neato burrito")
+    if kartstr.lower() in message.content.lower():
+        channel = message.channel
+        await channel.send("**Official We Suck Mario Kart Ranking** - 8 > SNES > 64 > 7 > Wii > GBA > DS > DD")
+    
+    if mariostr.lower() in message.content.lower():
+        channel = message.channel
+        await channel.send("**Official We Suck Mario Ranking** - Odyssey > 64 > World 2 > 3 > World > 3D World > Galaxy > 1 > 2 > Galaxy 2 > Sunshine")
+    
+    if ff2str.lower() in message.content.lower():
+        channel = message.channel
+        await channel.send("The thing about civilization is that we are all 72 hours away from pure cannibalistic anarchy. That clock gets reset everytime we eat, everytiem we sleep but all of life as know it are on a precipice. FF2 was about 48 hrs for me. Everything you know and care about means nothing. That's the reality of culture and civilzation. It's an absolute cosmic shadow held up by essentially nothing. Final fantasy 2 taught me that.")
+    
+   if coolstr.lower() in message.content.lower():
+       channel = message.channel
+       await channel.send("cool cool cool")
+    
+   if typongstr.lower() in message.content.lower():
+       channel = message.channel
+       await channel.send("Don't make fun of my typong")
+    
+    if ffstr.lower() in message.content.lower():
+        channel = message.channel
+        await channel.send("**Official We Suck Final Fantasy Ranking** - FF6 > FF4 > FF7 > FF9 > FF15 > FF10 > FF12 > FF1 > FF5 > FF8 > FF3 > FF13 > FF2")
+
+   if neatostr.lower() in message.content.lower():
+       channel = message.channel
+       await channel.send("neato burrito")
 
     await bot.process_commands(message)
 

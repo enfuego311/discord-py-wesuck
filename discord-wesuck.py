@@ -52,7 +52,7 @@ async def wotdreact(message):
     "😂",
     "🔥",
     "😱"
-]
+    ]
     for emoji in wotd_emojis:
         await message.add_reaction(emoji)
 

@@ -22,7 +22,6 @@ bot = commands.Bot(command_prefix='.', description=description)
 # random line function for word matching
 def random_line(fname):
     lines = open(fname).read().splitlines()
-    random.seed()
     return random.choice(lines)
 
 # if we see this the bot is alive
@@ -43,12 +42,15 @@ except:
         line = line.strip("\n")
         wordslines += 1
     file.close()
+    # set the seed once here to keep wotd consistent
     seed = date.today().isoformat().replace('-', '')
     random.seed(seed)
     wotdlineno = random.randrange(1, wordslines)
     f=open(os.path.join(sys.path[0], 'words.txt'))
     alllines=f.readlines()
     wotd = str.strip(alllines[int(wotdlineno)])
+    # after wotd is defined reset the seed
+    random.seed()
     file.close()
 
 # set reactions to word of the day

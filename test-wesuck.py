@@ -6,6 +6,7 @@ import aiohttp
 import asyncio
 from discord.ext import commands
 import random
+from datetime import date
 
 token = os.environ.get("DISCORD_TOKEN")
 tenorapi = os.environ.get("TENOR_API_KEY")
@@ -24,12 +25,30 @@ def random_line(fname):
     return random.choice(lines)
 
 
+
 @bot.event
 async def on_ready():
     print('Logged in as')
     print(bot.user.name)
     print(bot.user.id)
     print('------')
+
+try: seed
+except:
+    wordslines = 0
+    file = open(os.path.join(sys.path[0], 'words.txt'), "r")
+    for line in file:
+        line = line.strip("\n")
+        wordslines += 1
+    file.close()
+    #seed = date.today().isoformat().replace('-', '')
+    seed = 12345
+    random.seed(seed)
+    wotdlineno = random.randrange(1, wordslines)
+    f=open(os.path.join(sys.path[0], 'words.txt'))
+    alllines=f.readlines()
+    wotd = alllines[int(wotdlineno)]
+    file.close()
 
 
 # @bot.command(pass_context=True)
@@ -92,9 +111,17 @@ async def on_ready():
 #     await session2.close()
 #     await ctx.send(embed=embed)
 
+default_emojis = [
+    "\N{GRINNING FACE}"
+]
 
-# @bot.event
-# async def on_message(message):
+async def react(message):
+    for emoji in default_emojis:
+        await message.add_reaction(emoji)
+
+@bot.event
+async def on_message(message):
+    
 #     namestr = "marcus"
 #     moviestr = "movie night"
 #     herzogstr = "herzog"
@@ -107,18 +134,17 @@ async def on_ready():
 #     ffstr = "final fantasy"
 #     neatostr = "neato"
 #     zeldastr = "zelda"
+    tellstr = "tellme"
+    # if message.author.id == bot.user.id:
+    #     return
 
-
-#     if message.author.id == bot.user.id:
-#             return
-
-#     if namestr.lower() in message.content.lower():
-#         channel = message.channel
-#         await channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
-
-#     if moviestr.lower() in message.content.lower():
-#         channel = message.channel
-#         await channel.send(random_line(os.path.join(sys.path[0], 'movienight.txt')))
+    if wotdstr in message.content.lower():
+        await react(message)
+        
+    if tellstr in message.content.lower():
+        channel = message.channel
+        await channel.send(wotd)
+        await react(message)
 
 #     if herzogstr.lower() in message.content.lower():
 #         channel = message.channel
@@ -160,6 +186,6 @@ async def on_ready():
 #        channel = message.channel
 #        await channel.send("**Official We Suck Zelda Ranking** - BotW > LttP > LBW > OoT > WW > LoZ > LA > TP > MM > AoL > SS")
 
-#     await bot.process_commands(message)
+    await bot.process_commands(message)
 
 bot.run(token)

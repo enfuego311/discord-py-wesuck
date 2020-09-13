@@ -84,7 +84,7 @@ async def weather(ctx, *, search):
     embed = discord.Embed(title="Weather for " + city +
                           " " + country, colour=discord.Colour.blue())
     embed.set_image(url=locmapurl)
-    embed.add_field(name="Current Temp (feelslike)",
+    embed.add_field(name="Current Temp (Feels Like)",
                     value=temp + "F" + " " + "(" + feelslike + "F)")
     embed.add_field(name="Conditions", value=cond)
     embed.add_field(name="Humidity", value=humidity + "%")
@@ -107,7 +107,7 @@ async def on_message(message):
     ffstr = "final fantasy"
     neatostr = "neato"
 
-    if message.author == self.user:
+    if message.author.id == bot.user.id:
             return
 
     if namestr.lower() in message.content.lower():

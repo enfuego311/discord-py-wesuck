@@ -138,11 +138,11 @@ async def on_message(message):
         channel = message.channel
         await channel.send("The thing about civilization is that we are all 72 hours away from pure cannibalistic anarchy. That clock gets reset everytime we eat, everytiem we sleep but all of life as know it are on a precipice. FF2 was about 48 hrs for me. Everything you know and care about means nothing. That's the reality of culture and civilzation. It's an absolute cosmic shadow held up by essentially nothing. Final fantasy 2 taught me that.")
     
-   if coolstr.lower() in message.content.lower():
+    if coolstr.lower() in message.content.lower():
        channel = message.channel
        await channel.send("cool cool cool")
     
-   if typongstr.lower() in message.content.lower():
+    if typongstr.lower() in message.content.lower():
        channel = message.channel
        await channel.send("Don't make fun of my typong")
     
@@ -150,7 +150,7 @@ async def on_message(message):
         channel = message.channel
         await channel.send("**Official We Suck Final Fantasy Ranking** - FF6 > FF4 > FF7 > FF9 > FF15 > FF10 > FF12 > FF1 > FF5 > FF8 > FF3 > FF13 > FF2")
 
-   if neatostr.lower() in message.content.lower():
+    if neatostr.lower() in message.content.lower():
        channel = message.channel
        await channel.send("neato burrito")
 

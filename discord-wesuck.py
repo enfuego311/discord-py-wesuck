@@ -106,6 +106,8 @@ async def on_message(message):
     typongstr = "typong"
     ffstr = "final fantasy"
     neatostr = "neato"
+    zeldastr = "zelda"
+
 
     if message.author.id == bot.user.id:
             return
@@ -153,6 +155,10 @@ async def on_message(message):
     if neatostr.lower() in message.content.lower():
        channel = message.channel
        await channel.send("neato burrito")
+
+    if zeldastr.lower() in message.content.lower():
+       channel = message.channel
+       await channel.send("**Official We Suck Zelda Ranking** - BotW > LttP > LBW > OoT > WW > LoZ > LA > TP > MM > AoL > SS")
 
     await bot.process_commands(message)
 

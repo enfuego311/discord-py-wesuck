@@ -12,10 +12,8 @@ tenorapi = os.environ.get("TENOR_API_KEY")
 weatherapi = os.environ.get("WEATHER_API_KEY")
 googleapi = os.environ.get("GOOGLE_API_KEY")
 
-description = '''An example bot to showcase the discord.ext.commands extension
-module.
+description = '''To seek and annoy'''
 
-There are a number of utility commands being showcased here.'''
 bot = commands.Bot(command_prefix='.', description=description)
 
 

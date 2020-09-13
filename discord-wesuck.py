@@ -22,6 +22,7 @@ bot = commands.Bot(command_prefix='.', description=description)
 # random line function for word matching
 def random_line(fname):
     lines = open(fname).read().splitlines()
+    random.seed()
     return random.choice(lines)
 
 # if we see this the bot is alive

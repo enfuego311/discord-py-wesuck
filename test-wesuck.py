@@ -138,7 +138,7 @@ async def on_message(message):
     # if message.author.id == bot.user.id:
     #     return
 
-    if wotdstr in message.content.lower():
+    if wotd in message.content.lower():
         await react(message)
         
     if tellstr in message.content.lower():

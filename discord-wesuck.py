@@ -6,6 +6,7 @@ import aiohttp
 import asyncio
 from discord.ext import commands
 import random
+from datetime import date
 
 token = os.environ.get("DISCORD_TOKEN")
 tenorapi = os.environ.get("TENOR_API_KEY")
@@ -29,6 +30,31 @@ async def on_ready():
     print(bot.user.id)
     print('------')
 
+try: seed
+except:
+    wordslines = 0
+    file = open(os.path.join(sys.path[0], 'words.txt'), "r")
+    for line in file:
+        line = line.strip("\n")
+        wordslines += 1
+    file.close()
+    seed = date.today().isoformat().replace('-', '')
+    random.seed(seed)
+    wotdlineno = random.randrange(1, wordslines)
+    f=open(os.path.join(sys.path[0], 'words.txt'))
+    alllines=f.readlines()
+    wotd = str.strip(alllines[int(wotdlineno)])
+    file.close()
+
+async def wotdreact(message):
+    wotd_emojis = [
+    "👌",
+    "😂",
+    "🔥",
+    "😱"
+]
+    for emoji in wotd_emojis:
+        await message.add_reaction(emoji)
 
 @bot.command(pass_context=True)
 async def sgif(ctx, *, search):
@@ -106,6 +132,8 @@ async def on_message(message):
     neatostr = "neato"
     zeldastr = "zelda"
 
+    if wotd in message.content.lower():
+        await wotdreact(message)
 
     if message.author.id == bot.user.id:
             return

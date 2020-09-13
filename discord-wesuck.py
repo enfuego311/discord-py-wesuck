@@ -18,9 +18,11 @@ module.
 There are a number of utility commands being showcased here.'''
 bot = commands.Bot(command_prefix='?', description=description)
 
+
 def random_line(fname):
     lines = open(fname).read().splitlines()
     return random.choice(lines)
+
 
 @bot.event
 async def on_ready():
@@ -28,6 +30,7 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
+
 
 @bot.command(pass_context=True)
 async def sgif(ctx, *, search):
@@ -38,10 +41,11 @@ async def sgif(ctx, *, search):
     response = await session.get('http://api.tenor.com/v1/search?key=' + tenorapi + '&q=' + search + '&contentfilter=' + confilter + '&limit=1&media_filter=minimal')
     data = json.loads(await response.text())
     embed.set_image(url=data['results'][0]['media'][0]['gif']['url'])
-    
+
     await session.close()
 
     await ctx.send(embed=embed)
+
 
 @bot.command(pass_context=True)
 async def gif(ctx, *, search):
@@ -61,28 +65,33 @@ async def gif(ctx, *, search):
 @bot.command(pass_context=True)
 async def weather(ctx, *, search):
     session = aiohttp.ClientSession()
+    session2 = aiohttp.ClientSession()
     search.replace(' ', '+')
     georesp = await session.get('https://maps.googleapis.com/maps/api/geocode/json?key=' + googleapi + '&address=' + search, ssl=False)
     geodata = json.loads(await georesp.text())
-    geolat = geodata['results'][0]['geometry']['location']['lat']
-    geolon = geodata['results'][0]['geometry']['location']['lng']
-    await session.close()
-    weatheresp = await session.get('http://api.openweathermap.org/data/2.5/weather?appid=' + weatherapi + '&lat=' + geolat + '&lon=' + geolon + '&units=imperial')
-    locmapurl = 'https://maps.googleapis.com/maps/api/staticmap?center=' + geolat + ',' + geolon + '&zoom=11&size=600x200&key=' + googleapi
-    temp = weatheresp['main']['temp']
-    city = weatheresp['name']
-    country = weatheresp['sys']['country']
-    cond = weatheresp['weather'][0]['description']
-    feelslike = weatheresp['main']['feels_like']
-    humidity = weatheresp['main']['humidity']
-    await session.close()
-    embed = discord.Embed(title="Weather for" + city + " " + country, colour=discord.Colour.blue())
+    geolat = str(geodata['results'][0]['geometry']['location']['lat'])
+    geolon = str(geodata['results'][0]['geometry']['location']['lng'])
+    weatheresp = await session2.get('http://api.openweathermap.org/data/2.5/weather?appid=' + weatherapi + '&lat=' + geolat + '&lon=' + geolon + '&units=imperial')
+    weatherdata = json.loads(await weatheresp.text())
+    locmapurl = 'https://maps.googleapis.com/maps/api/staticmap?center=' + \
+        geolat + ',' + geolon + '&zoom=11&size=600x200&key=' + googleapi
+    temp = str(weatherdata['main']['temp'])
+    city = weatherdata['name']
+    country = weatherdata['sys']['country']
+    cond = weatherdata['weather'][0]['description']
+    feelslike = str(weatherdata['main']['feels_like'])
+    humidity = str(weatherdata['main']['humidity'])
+    embed = discord.Embed(title="Weather for " + city +
+                          " " + country, colour=discord.Colour.blue())
     embed.set_image(url=locmapurl)
-    embed.add_field(name="Current Temp (feelslike)", value=temp + "F" + " " + "(" + feelslike + "F)")
+    embed.add_field(name="Current Temp (feelslike)",
+                    value=temp + "F" + " " + "(" + feelslike + "F)")
     embed.add_field(name="Conditions", value=cond)
     embed.add_field(name="Humidity", value=humidity + "%")
-
+    await session.close()
+    await session2.close()
     await ctx.send(embed=embed)
+
 
 @bot.event
 async def on_message(message):

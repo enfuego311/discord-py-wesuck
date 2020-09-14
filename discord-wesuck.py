@@ -73,7 +73,11 @@ async def is_time_between(begin_time, end_time, check_time=None):
         return check_time >= begin_time or check_time <= end_time
 
 # top result tenor match command
-@bot.command(pass_context=True)
+@bot.command(
+    pass_context=True,
+    help="Sends a query to Tenor to get the top match based on your search terms.",
+    brief="Tenor top gif."
+)
 async def sgif(ctx, *, search):
     confilter = "low"
     embed = discord.Embed(colour=discord.Colour.blue())
@@ -88,7 +92,11 @@ async def sgif(ctx, *, search):
     await ctx.send(embed=embed)
 
 # random result tenor match command
-@bot.command(pass_context=True)
+@bot.command(
+    pass_context=True,
+    help="Sends a query to Tenor to get a random match based on your search terms.",
+    brief="Tenor random gif."
+)
 async def gif(ctx, *, search):
     confilter = "low"
     embed = discord.Embed(colour=discord.Colour.blue())
@@ -103,7 +111,11 @@ async def gif(ctx, *, search):
     await ctx.send(embed=embed)
 
 # weather command
-@bot.command(pass_context=True)
+@bot.command(
+    pass_context=True,
+    help="This will query the google maps api to get the latitude and longitude. Using that it will query the OpenWeather API for local conditions.",
+    brief="Weather for the location specified."
+)
 async def weather(ctx, *, search):
     session = aiohttp.ClientSession()
     session2 = aiohttp.ClientSession()

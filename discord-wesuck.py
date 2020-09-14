@@ -6,7 +6,7 @@ import aiohttp
 import asyncio
 from discord.ext import commands
 import random
-from datetime import date
+from datetime import datetime, date, time
 
 # discord and API tokens need to be environment variables named as below
 token = os.environ.get("DISCORD_TOKEN")
@@ -63,6 +63,14 @@ async def wotdreact(message):
     ]
     for emoji in wotd_emojis:
         await message.add_reaction(emoji)
+
+async def is_time_between(begin_time, end_time, check_time=None):
+    # If check time is not given, default to current time
+    check_time = check_time or datetime.now().time()
+    if begin_time < end_time:
+        return check_time >= begin_time and check_time <= end_time
+    else: # crosses midnight
+        return check_time >= begin_time or check_time <= end_time
 
 # top result tenor match command
 @bot.command(pass_context=True)
@@ -140,11 +148,12 @@ async def on_message(message):
     kartstr = "kart"
     mariostr = "mario"
     ff2str = "ff2"
-    coolstr = "cool"
+    # coolstr = "cool"
     typongstr = "typong"
     ffstr = "final fantasy"
     neatostr = "neato"
     zeldastr = "zelda"
+    timewotd = "wotd"
 
     # bot ignores botself
     if message.author.id == bot.user.id:
@@ -183,9 +192,9 @@ async def on_message(message):
         channel = message.channel
         await channel.send("The thing about civilization is that we are all 72 hours away from pure cannibalistic anarchy. That clock gets reset everytime we eat, everytiem we sleep but all of life as know it are on a precipice. FF2 was about 48 hrs for me. Everything you know and care about means nothing. That's the reality of culture and civilzation. It's an absolute cosmic shadow held up by essentially nothing. Final fantasy 2 taught me that.")
     
-    if coolstr.lower() in message.content.lower():
-       channel = message.channel
-       await channel.send("cool cool cool")
+    # if coolstr.lower() in message.content.lower():
+    #    channel = message.channel
+    #    await channel.send("cool cool cool")
     
     if typongstr.lower() in message.content.lower():
        channel = message.channel
@@ -202,6 +211,13 @@ async def on_message(message):
     if zeldastr.lower() in message.content.lower():
        channel = message.channel
        await channel.send("**Official We Suck Zelda Ranking** - BotW > LttP > LBW > OoT > WW > LoZ > LA > TP > MM > AoL > SS")
+
+    if timewotd.lower() in message.content.lower():
+        channel = message.channel
+        if await is_time_between(time(20,00), time(23,59)):
+            await channel.send("The word of the day today was: **" + wotd + "**")
+        else:
+            await channel.send("We don't talk about the word of the day until after 8pm pacific.")
 
     # this keeps us from getting stuck in this function
     await bot.process_commands(message)

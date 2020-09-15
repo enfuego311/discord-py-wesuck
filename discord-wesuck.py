@@ -6,7 +6,10 @@ import aiohttp
 import asyncio
 from discord.ext import commands
 import random
-from datetime import datetime, date, time
+from datetime import datetime
+from datetime import date
+from datetime import time
+from datetime import timedelta
 
 # discord and API tokens need to be environment variables named as below
 token = os.environ.get("DISCORD_TOKEN")
@@ -37,19 +40,28 @@ async def on_ready():
 try: seed
 except:
     wordslines = 0
+    # open the words file and count the lines
     file = open(os.path.join(sys.path[0], 'words.txt'), "r")
     for line in file:
         line = line.strip("\n")
         wordslines += 1
     file.close()
-    # set the seed once here to keep wotd consistent
+    # set seed to today's date for consistency
     seed = date.today().isoformat().replace('-', '')
+    # set yesterday's seed to to yesterday's date
+    ydayseed = (date.today() - timedelta(days=1)).isoformat().replace('-', '')
+    # set today's seed and get today's line number
     random.seed(seed)
     wotdlineno = random.randrange(1, wordslines)
+    # set yesterday's seed and get yesterday's line number
+    random.seed(ydayseed)
+    ydwotdlineno = random.randrange(1, wordslines)
+    # open the file and get the 2 words
     f=open(os.path.join(sys.path[0], 'words.txt'))
     alllines=f.readlines()
-    wotd = str.strip(alllines[int(wotdlineno)])
-    # after wotd is defined reset the seed
+    swotd = str.strip(alllines[int(wotdlineno)])
+    sywotd = str.strip(alllines[int(ydwotdlineno)])
+    # after wotd and ywotd are defined reset the seed and close the file
     random.seed()
     file.close()
 
@@ -110,6 +122,28 @@ async def gif(ctx, *, search):
 
     await ctx.send(embed=embed)
 
+# get today's word
+@bot.command(
+    pass_context=True,
+    help="This will return today's word of the day between 8pm and 12pm pacific.",
+    brief="Get today's word."
+)
+async def wotd(ctx):
+    if await is_time_between(time(20, 00), time(23, 59)):
+        await ctx.send("The word of the day today was: **" + swotd + "**")
+    else:
+        await ctx.send("We don't talk about the word of the day until after 8pm pacific.")
+
+# get yesterday's word
+@bot.command(
+    pass_context=True,
+    help="This will return yesterday's word of the day.",
+    brief="Get yesterday's word."
+)
+async def ywotd(ctx):
+    await ctx.send("Yesterday's word of the day was: **" + sywotd + "**")
+
+
 # weather command
 @bot.command(
     pass_context=True, 
@@ -165,14 +199,13 @@ async def on_message(message):
     ffstr = "final fantasy"
     neatostr = "neato"
     zeldastr = "zelda"
-    timewotd = "wotd"
-
+    
     # bot ignores botself
     if message.author.id == bot.user.id:
             return
 
     # wotd reaction
-    if wotd in message.content.lower():
+    if swotd in message.content.lower():
         await wotdreact(message)
 
     # other word matches with static and random line responses below
@@ -223,14 +256,7 @@ async def on_message(message):
     if zeldastr.lower() in message.content.lower():
        channel = message.channel
        await channel.send("**Official We Suck Zelda Ranking** - BotW > LttP > LBW > OoT > WW > LoZ > LA > TP > MM > AoL > SS")
-
-    if timewotd.lower() in message.content.lower():
-        channel = message.channel
-        if await is_time_between(time(20,00), time(23,59)):
-            await channel.send("The word of the day today was: **" + wotd + "**")
-        else:
-            await channel.send("We don't talk about the word of the day until after 8pm pacific.")
-
+    
     # this keeps us from getting stuck in this function
     await bot.process_commands(message)
 

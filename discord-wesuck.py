@@ -76,6 +76,7 @@ async def wotdreact(message):
     for emoji in wotd_emojis:
         await message.add_reaction(emoji)
 
+# function that does what it says - also works for times spanning midnight
 async def is_time_between(begin_time, end_time, check_time=None):
     # If check time is not given, default to current time
     check_time = check_time or datetime.now().time()
@@ -83,6 +84,23 @@ async def is_time_between(begin_time, end_time, check_time=None):
         return check_time >= begin_time and check_time <= end_time
     else: # crosses midnight
         return check_time >= begin_time or check_time <= end_time
+
+# spongebob text into alternating case SaRcAsM
+@bot.command(
+    pass_context=True,
+    help="Changes text provided into alternating case spongebob sarcastic memery.",
+    brief="Spongebob your text."
+)
+async def sb(ctx, *, sbtext):
+    sbemoji = "<:sb:755535426118484138>"
+    res = ""
+    for idx in range(len(sbtext)):
+        if not idx % 2:
+            res = res + sbtext[idx].upper()
+        else:
+            res = res + sbtext[idx].lower()
+    await ctx.send(sbemoji)
+    await ctx.send(str(res))
 
 # top result tenor match command
 @bot.command(

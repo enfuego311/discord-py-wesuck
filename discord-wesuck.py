@@ -85,6 +85,18 @@ async def is_time_between(begin_time, end_time, check_time=None):
     else: # crosses midnight
         return check_time >= begin_time or check_time <= end_time
 
+# clap!👏
+@bot.command(
+    pass_context=True,
+    help="Put a clap emoji between every word.  ",
+    brief="I will clap for you."
+)
+async def clap(ctx, *, claptext):
+    clapemoji = '👏'
+    clapupper = str(claptext).upper().split()
+    clapjoin = clapemoji.join(clapupper)
+    await ctx.send(str(clapjoin) + clapemoji)
+
 # spongebob text into alternating case SaRcAsM
 @bot.command(
     pass_context=True,

@@ -131,7 +131,7 @@ async def sbclap(ctx, *, sbclaptext):
     clapemoji = '👏'
     clapsplit = str(res).split()
     clapjoin = clapemoji.join(clapsplit)
-    await ctx.send(sbemoji + clapemoji)
+    await ctx.send(sbemoji)
     await ctx.send(str(clapjoin) + clapemoji)
 
 # top result tenor match command

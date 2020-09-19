@@ -10,6 +10,7 @@ from datetime import datetime
 from datetime import date
 from datetime import time
 from datetime import timedelta
+from aiocfscrape import CloudflareScraper
 
 # discord and API tokens need to be environment variables named as below
 token = os.environ.get("DISCORD_TOKEN")
@@ -88,7 +89,7 @@ async def is_time_between(begin_time, end_time, check_time=None):
 # clap!👏
 @bot.command(
     pass_context=True,
-    help="Put a clap emoji between every word.  ",
+    help="Put a clap emoji between every word.",
     brief="I will clap for you."
 )
 async def clap(ctx, *, claptext):
@@ -131,6 +132,24 @@ async def sgif(ctx, *, search):
 
     await session.close()
 
+    await ctx.send(embed=embed)
+
+
+async def cs_page(url):
+    async with CloudflareScraper() as session:
+        async with session.get(url) as resp:
+            return await resp.text()
+
+# inspire me
+@bot.command(
+    pass_context=True,
+    help="Generates an image from inspirobot.",
+    brief="Inpsire me."
+)
+async def inspire(ctx):
+    embed = discord.Embed(colour=discord.Colour.blue())
+    response = await cs_page('https://inspirobot.me/api?generate=true')
+    embed.set_image(url=response)
     await ctx.send(embed=embed)
 
 # random result tenor match command

@@ -85,6 +85,18 @@ async def is_time_between(begin_time, end_time, check_time=None):
     else: # crosses midnight
         return check_time >= begin_time or check_time <= end_time
 
+# # clap!👏
+# @bot.command(
+#     pass_context=True,
+#     help="Put a clap emoji between every word.  ",
+#     brief="I will clap for you."
+# )
+# async def clap(ctx, *, claptext):
+#     clapemoji = '👏'
+#     clapupper = str(claptext).upper().split()
+#     clapjoin = clapemoji.join(clapupper)
+#     await ctx.send(str(clapjoin) + clapemoji)
+
 # # spongebob text into alternating case SaRcAsM
 # @bot.command(
 #     pass_context=True,
@@ -92,7 +104,7 @@ async def is_time_between(begin_time, end_time, check_time=None):
 #     brief="Spongebob your text."
 # )
 # async def sb(ctx, *, sbtext):
-#     sbemoji = "<:sb:755535426118484138>"
+    
 #     res = ""
 #     for idx in range(len(sbtext)):
 #         if not idx % 2:
@@ -101,6 +113,25 @@ async def is_time_between(begin_time, end_time, check_time=None):
 #             res = res + sbtext[idx].lower()
 #     await ctx.send(sbemoji)
 #     await ctx.send(str(res))
+
+# @bot.command(
+#     pass_context=True,
+#     help="Combines the awesome of sb and clap.",
+#     brief="Why not both?"
+# )
+# async def sbclap(ctx, *, sbclaptext):
+#     res = ""
+#     for idx in range(len(sbclaptext)):
+#         if not idx % 2:
+#             res = res + sbclaptext[idx].upper()
+#         else:
+#             res = res + sbclaptext[idx].lower()
+#     sbemoji = "<:sb:755535426118484138>"
+#     clapemoji = '👏'
+#     clapsplit = str(res).split()
+#     clapjoin = clapemoji.join(clapsplit)
+#     await ctx.send(sbemoji + clapemoji)
+#     await ctx.send(str(clapjoin) + clapemoji)
 
 # # top result tenor match command
 # @bot.command(
@@ -191,7 +222,7 @@ async def is_time_between(begin_time, end_time, check_time=None):
 #     humidity = str(weatherdata['main']['humidity'])
 #     # populate the embed with returned values
 #     embed = discord.Embed(title="Weather for " + city +
-#                         " " + country, colour=discord.Colour.blue())
+#                           " " + country, colour=discord.Colour.blue())
 #     embed.set_image(url=locmapurl)
 #     embed.add_field(name="Current Temp (Feels Like)",
 #                     value=temp + "F" + " " + "(" + feelslike + "F)")
@@ -201,81 +232,81 @@ async def is_time_between(begin_time, end_time, check_time=None):
 #     await session2.close()
 #     await ctx.send(embed=embed)
 
-# # match various patterns including word of the day and respond with
-# # either random lines or react to wotd with emoji
-# @bot.event
-# async def on_message(message):
-#     namestr = "marcus"
-#     moviestr = "movie night"
-#     herzogstr = "herzog"
-#     herstr = "amanda"
-#     kartstr = "kart"
-#     mariostr = "mario"
-#     ff2str = "ff2"
-#     # coolstr = "cool"
-#     typongstr = "typong"
-#     ffstr = "final fantasy"
-#     neatostr = "neato"
-#     zeldastr = "zelda"
+# match various patterns including word of the day and respond with
+# either random lines or react to wotd with emoji
+@bot.event
+async def on_message(message):
+    # namestr = "marcus"
+    # moviestr = "movie night"
+    # herzogstr = "herzog"
+    # herstr = "amanda"
+    # kartstr = "kart"
+    # mariostr = "mario"
+    # ff2str = "ff2"
+    # # coolstr = "cool"
+    # typongstr = "typong"
+    # ffstr = "final fantasy"
+    # neatostr = "neato"
+    # zeldastr = "zelda"
     
-#     # bot ignores botself
-#     if message.author.id == bot.user.id:
-#             return
+    # bot ignores botself
+    if message.author.id == bot.user.id:
+            return
 
-#     # wotd reaction
-#     if swotd in message.content.lower():
-#         await wotdreact(message)
+    # # wotd reaction
+    # if swotd in message.content.lower():
+    #     await wotdreact(message)
 
-#     # other word matches with static and random line responses below
-#     if namestr.lower() in message.content.lower():
-#         channel = message.channel
-#         await channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
+    # # other word matches with static and random line responses below
+    # if namestr.lower() in message.content.lower():
+    #     channel = message.channel
+    #     await channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
 
-#     if moviestr.lower() in message.content.lower():
-#         channel = message.channel
-#         await channel.send(random_line(os.path.join(sys.path[0], 'movienight.txt')))
+    # if moviestr.lower() in message.content.lower():
+    #     channel = message.channel
+    #     await channel.send(random_line(os.path.join(sys.path[0], 'movienight.txt')))
 
-#     if herzogstr.lower() in message.content.lower():
-#         channel = message.channel
-#         await channel.send(random_line(os.path.join(sys.path[0], 'herzog.txt')))
+    # if herzogstr.lower() in message.content.lower():
+    #     channel = message.channel
+    #     await channel.send(random_line(os.path.join(sys.path[0], 'herzog.txt')))
     
-#     if herstr.lower() in message.content.lower():
-#         channel = message.channel
-#         await channel.send("At least until operation: kill wife and kids")
+    # if herstr.lower() in message.content.lower():
+    #     channel = message.channel
+    #     await channel.send("At least until operation: kill wife and kids")
 
-#     if kartstr.lower() in message.content.lower():
-#         channel = message.channel
-#         await channel.send("**Official We Suck Mario Kart Ranking** - 8 > SNES > 64 > 7 > Wii > GBA > DS > DD")
+    # if kartstr.lower() in message.content.lower():
+    #     channel = message.channel
+    #     await channel.send("**Official We Suck Mario Kart Ranking** - 8 > SNES > 64 > 7 > Wii > GBA > DS > DD")
     
-#     if mariostr.lower() in message.content.lower():
-#         channel = message.channel
-#         await channel.send("**Official We Suck Mario Ranking** - Odyssey > 64 > World 2 > 3 > World > 3D World > Galaxy > 1 > 2 > Galaxy 2 > Sunshine")
+    # if mariostr.lower() in message.content.lower():
+    #     channel = message.channel
+    #     await channel.send("**Official We Suck Mario Ranking** - Odyssey > 64 > World 2 > 3 > World > 3D World > Galaxy > 1 > 2 > Galaxy 2 > Sunshine")
     
-#     if ff2str.lower() in message.content.lower():
-#         channel = message.channel
-#         await channel.send("The thing about civilization is that we are all 72 hours away from pure cannibalistic anarchy. That clock gets reset everytime we eat, everytiem we sleep but all of life as know it are on a precipice. FF2 was about 48 hrs for me. Everything you know and care about means nothing. That's the reality of culture and civilzation. It's an absolute cosmic shadow held up by essentially nothing. Final fantasy 2 taught me that.")
+    # if ff2str.lower() in message.content.lower():
+    #     channel = message.channel
+    #     await channel.send("The thing about civilization is that we are all 72 hours away from pure cannibalistic anarchy. That clock gets reset everytime we eat, everytiem we sleep but all of life as know it are on a precipice. FF2 was about 48 hrs for me. Everything you know and care about means nothing. That's the reality of culture and civilzation. It's an absolute cosmic shadow held up by essentially nothing. Final fantasy 2 taught me that.")
     
-#     # if coolstr.lower() in message.content.lower():
-#     #    channel = message.channel
-#     #    await channel.send("cool cool cool")
+    # # if coolstr.lower() in message.content.lower():
+    # #    channel = message.channel
+    # #    await channel.send("cool cool cool")
     
-#     if typongstr.lower() in message.content.lower():
-#     channel = message.channel
-#     await channel.send("Don't make fun of my typong")
+    # if typongstr.lower() in message.content.lower():
+    #    channel = message.channel
+    #    await channel.send("Don't make fun of my typong")
     
-#     if ffstr.lower() in message.content.lower():
-#         channel = message.channel
-#         await channel.send("**Official We Suck Final Fantasy Ranking** - FF6 > FF4 > FF7 > FF9 > FF15 > FF10 > FF12 > FF1 > FF5 > FF8 > FF3 > FF13 > FF2")
+    # if ffstr.lower() in message.content.lower():
+    #     channel = message.channel
+    #     await channel.send("**Official We Suck Final Fantasy Ranking** - FF6 > FF4 > FF7 > FF9 > FF15 > FF10 > FF12 > FF1 > FF5 > FF8 > FF3 > FF13 > FF2")
 
-#     if neatostr.lower() in message.content.lower():
-#     channel = message.channel
-#     await channel.send("neato burrito")
+    # if neatostr.lower() in message.content.lower():
+    #    channel = message.channel
+    #    await channel.send("neato burrito")
 
-#     if zeldastr.lower() in message.content.lower():
-#     channel = message.channel
-#     await channel.send("**Official We Suck Zelda Ranking** - BotW > LttP > LBW > OoT > WW > LoZ > LA > TP > MM > AoL > SS")
+    # if zeldastr.lower() in message.content.lower():
+    #    channel = message.channel
+    #    await channel.send("**Official We Suck Zelda Ranking** - BotW > LttP > LBW > OoT > WW > LoZ > LA > TP > MM > AoL > SS")
     
-#     # this keeps us from getting stuck in this function
-#     await bot.process_commands(message)
+    # # this keeps us from getting stuck in this function
+    await bot.process_commands(message)
 
 bot.run(token)

@@ -115,6 +115,26 @@ async def sb(ctx, *, sbtext):
     await ctx.send(sbemoji)
     await ctx.send(str(res))
 
+# why not both?
+@bot.command(
+    pass_context=True,
+    help="Combines the awesome of sb and clap.",
+    brief="Why not both?"
+)
+async def sbclap(ctx, *, sbclaptext):
+    res = ""
+    for idx in range(len(sbclaptext)):
+        if not idx % 2:
+            res = res + sbclaptext[idx].upper()
+        else:
+            res = res + sbclaptext[idx].lower()
+    sbemoji = "<:sb:755535426118484138>"
+    clapemoji = '👏'
+    clapsplit = str(res).split()
+    clapjoin = clapemoji.join(clapsplit)
+    await ctx.send(sbemoji)
+    await ctx.send(str(clapjoin) + clapemoji)
+
 # top result tenor match command
 @bot.command(
     pass_context=True, 

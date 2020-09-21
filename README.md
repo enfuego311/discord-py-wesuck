@@ -5,3 +5,4 @@ This bot runs on a personal discord for a small group of friends. Although not s
 Requires:
 - Python 3
 - Discord.py
+- aiocfscrape

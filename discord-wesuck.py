@@ -268,6 +268,7 @@ async def on_message(message):
     ffstr = "final fantasy"
     neatostr = "neato"
     zeldastr = "zelda"
+    bofhstr = "error"
     
     # bot ignores botself
     if message.author.id == bot.user.id:
@@ -289,6 +290,10 @@ async def on_message(message):
     if herzogstr.lower() in message.content.lower():
         channel = message.channel
         await channel.send(random_line(os.path.join(sys.path[0], 'herzog.txt')))
+
+    if bofhstr.lower() in message.content.lower():
+        channel = message.channel
+        await channel.send(random_line(os.path.join(sys.path[0], 'bofh.txt')))
     
     if herstr.lower() in message.content.lower():
         channel = message.channel

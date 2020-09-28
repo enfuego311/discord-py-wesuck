@@ -263,7 +263,6 @@ async def on_message(message):
     kartstr = "kart"
     mariostr = "mario"
     ff2str = "ff2"
-    # coolstr = "cool"
     typongstr = "typong"
     ffstr = "final fantasy"
     neatostr = "neato"
@@ -275,7 +274,7 @@ async def on_message(message):
             return
 
     # wotd reaction
-    if swotd in message.content.lower():
+    if swotd.lower() in message.content.lower():
         await wotdreact(message)
 
     # other word matches with static and random line responses below
@@ -310,10 +309,6 @@ async def on_message(message):
     if ff2str.lower() in message.content.lower():
         channel = message.channel
         await channel.send("The thing about civilization is that we are all 72 hours away from pure cannibalistic anarchy. That clock gets reset everytime we eat, everytiem we sleep but all of life as know it are on a precipice. FF2 was about 48 hrs for me. Everything you know and care about means nothing. That's the reality of culture and civilzation. It's an absolute cosmic shadow held up by essentially nothing. Final fantasy 2 taught me that.")
-    
-    # if coolstr.lower() in message.content.lower():
-    #    channel = message.channel
-    #    await channel.send("cool cool cool")
     
     if typongstr.lower() in message.content.lower():
        channel = message.channel

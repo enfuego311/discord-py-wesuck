@@ -8,11 +8,11 @@ appetite
 around
 artist
 attach
-Back
+back
 bashful
 basket
 batch
-Begin
+begin
 behave
 belong
 bend
@@ -153,7 +153,7 @@ spiral
 sprinkle
 startle
 steep
-Stop
+stop
 storm
 striped
 surround

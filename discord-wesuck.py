@@ -11,6 +11,7 @@ from datetime import date
 from datetime import time
 from datetime import timedelta
 from aiocfscrape import CloudflareScraper
+from spellchecker import SpellChecker
 
 # discord and API tokens need to be environment variables named as below
 token = os.environ.get("DISCORD_TOKEN")
@@ -214,6 +215,49 @@ async def wotd(ctx):
 async def ywotd(ctx):
     await ctx.send("Yesterday's word of the day was: **" + sywotd + "**")
 
+# the WTF command
+# gets the last message from mentioned user in the current channel and spell corrects it
+@bot.command(
+    pass_context="True",
+    help="If a user is mentioned using an @, it will get the last msg by them and spellcheck it.",
+    brief="Spellcheck a mentioned user's last msg."
+)
+async def wtf(ctx, user: discord.User):
+    # init lastMessage
+    lastMessage = None
+    # identify what channel this was asked in
+    channel = ctx.channel
+    # check history for the latest message
+    fetchMessage = await channel.history().find(lambda m: m.author.id == user.id)
+
+    # loop to find the newest message by comparing creation times
+    if lastMessage is None:
+        lastMessage = fetchMessage
+    else:
+        if fetchMessage.created_at > lastMessage.created_at:
+            lastMessage = fetchMessage
+
+    # if a message is found, run the spell check sequence
+    if (lastMessage is not None):
+        spell = SpellChecker()
+        # init the working message as a copy of the actual message
+        workmsg = lastMessage.content
+        # split the message into words
+        msgwords = lastMessage.content.split()
+        # spell check every word
+        for word in msgwords:
+            # sanity check for alpha characters
+            word = ''.join(filter(str.isalpha, word))
+            # this tests if there is a correction for the word
+            test = spell.correction(word)
+            # if the word has changed, it has been corrected
+            if test != word:
+                # replace this word in the working message
+                workmsg = workmsg.replace(word, test)
+            else: 
+                pass
+            
+        await ctx.send('"' + workmsg + '"')
 
 # weather command
 @bot.command(

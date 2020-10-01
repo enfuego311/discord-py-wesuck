@@ -6,3 +6,4 @@ Requires:
 - Python 3
 - Discord.py
 - aiocfscrape
+- spellchecker

@@ -408,6 +408,7 @@ Route flapping at the NAP.
 Computers under water due to SYN flooding.
 The vulcan-death-grip ping has been applied.
 Electrical conduits in machine room are melting.
+Reticulating Splines
 Traffic jam on the Information Superhighway.
 Radial Telemetry Infiltration
 Cow-tippers tipped a cow onto the server.

@@ -1,6 +1,7 @@
 import os
 import sys
 import discord
+import re
 import json
 import aiohttp
 import asyncio
@@ -79,6 +80,13 @@ async def wotdreact(message):
     ]
     for emoji in wotd_emojis:
         await message.add_reaction(emoji)
+
+# set reactions to nice
+async def nicereact(message):
+    nice_emoji = "<:69:844757057437302856>"
+    await message.add_reaction(nice_emoji)
+
+
 
 # function that does what it says - also works for times spanning midnight
 async def is_time_between(begin_time, end_time, check_time=None):
@@ -302,6 +310,7 @@ async def weather(ctx, *, search):
 # either random lines or react to wotd with emoji
 @bot.event
 async def on_message(message):
+    nicepattern = r".*\bnice\b\W*"
     namestr = "marcus"
     moviestr = "movie night"
     herzogstr = "herzog"
@@ -313,7 +322,7 @@ async def on_message(message):
     ffstr = "final fantasy"
     neatostr = "neato"
     zeldastr = "zelda"
-    bofhstr = " error"
+    bofhpattern = r".*\berror\b\W*"
     # this is the *real* bot username - not the nickname
     botstr = bot.user.name
 
@@ -336,6 +345,15 @@ async def on_message(message):
     if swotd.lower() in message.content.lower():
         await wotdreact(message)
 
+    # nice reaction
+    sequence = message.content.lower()
+    if re.match(nicepattern, sequence):
+        await nicereact(message)
+
+    # bofh regex
+    if re.match(bofhpattern, sequence):
+        await channel.send(random_line(os.path.join(sys.path[0], 'bofh.txt')))
+
     # other word matches with static and random line responses below
     if moviestr.lower() in message.content.lower():
         await channel.send(random_line(os.path.join(sys.path[0], 'movienight.txt')))
@@ -343,9 +361,6 @@ async def on_message(message):
     if herzogstr.lower() in message.content.lower():
         await channel.send(random_line(os.path.join(sys.path[0], 'herzog.txt')))
 
-    if bofhstr.lower() in message.content.lower():
-        await channel.send(random_line(os.path.join(sys.path[0], 'bofh.txt')))
-    
     if herstr.lower() in message.content.lower():
         await channel.send("At least until operation: kill wife and kids")
 

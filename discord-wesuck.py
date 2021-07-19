@@ -205,14 +205,14 @@ async def gif(ctx, *, search):
 # get today's word
 @bot.command(
     pass_context=True,
-    help="This will return today's word of the day between 8pm and 12pm pacific.",
+    help="This will return today's word of the day between 8pm and 12pm eastern.",
     brief="Get today's word."
 )
 async def wotd(ctx):
     if await is_time_between(time(20, 00), time(23, 59)):
         await ctx.send("The word of the day today was: **" + swotd + "**")
     else:
-        await ctx.send("We don't talk about the word of the day until after 8pm pacific.")
+        await ctx.send("We don't talk about the word of the day until after 8pm eastern.")
 
 # get yesterday's word
 @bot.command(

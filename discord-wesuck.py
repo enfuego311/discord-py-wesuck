@@ -322,7 +322,7 @@ async def on_message(message):
     ffstr = "final fantasy"
     neatostr = "neato"
     zeldastr = "zelda"
-    titwstr = "this is the way."
+    titwstr = "this is the way"
     bofhpattern = r".*\berror\b\W*"
     # this is the *real* bot username - not the nickname
     botstr = bot.user.name

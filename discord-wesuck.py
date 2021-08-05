@@ -322,6 +322,7 @@ async def on_message(message):
     ffstr = "final fantasy"
     neatostr = "neato"
     zeldastr = "zelda"
+    titwstr = "this is the way."
     bofhpattern = r".*\berror\b\W*"
     # this is the *real* bot username - not the nickname
     botstr = bot.user.name
@@ -385,6 +386,9 @@ async def on_message(message):
     if zeldastr.lower() in message.content.lower():
        await channel.send("**Official We Suck Zelda Ranking** - BotW > LttP > LBW > OoT > WW > LoZ > LA > TP > MM > AoL > SS")
     
+    if titwstr.lower() in message.content.lower():
+        await channel.send("This is the way.")
+        
     # this keeps us from getting stuck in this function
     await bot.process_commands(message)
 

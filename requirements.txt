@@ -1,0 +1,5 @@
+discord
+aiohttp
+aiocfscrape
+pyspellchecker
+

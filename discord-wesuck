@@ -1,7 +1,0 @@
-#!/bin/sh
-
-P=$0
-
-. venv/bin/activate
-exec python3 $P.py "$@"
-

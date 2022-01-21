@@ -14,6 +14,10 @@ from datetime import timedelta
 from aiocfscrape import CloudflareScraper
 from spellchecker import SpellChecker
 
+# datetime object containing current date and time
+now = datetime.now()
+dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+
 # discord and API tokens need to be environment variables named as below
 token = os.environ.get("DISCORD_TOKEN")
 tenorapi = os.environ.get("TENOR_API_KEY")
@@ -221,7 +225,16 @@ async def wotd(ctx):
     brief="Get yesterday's word."
 )
 async def ywotd(ctx):
-    await ctx.send("Yesterday's word of the day was: **" + sywotd + "**")
+    await ctx.send("Yesterday's word of the day was: **" + sywotd + "**")# date
+
+# get current time
+@bot.command(
+    pass_context=True,
+    help="This will return what time I think it is.",
+    brief="Get the time."
+)
+async def whattimeisit(ctx):
+    await ctx.send("The current time is: " + dt_string )
 
 # the WTF command
 # gets the last message from mentioned user in the current channel and spell corrects it

@@ -13,7 +13,7 @@ from datetime import timedelta
 from aiocfscrape import CloudflareScraper
 from spellchecker import SpellChecker
 
-# discord and API tokens need to be environment variables named as below
+# discord and API tokens need to be environment variables named as below #
 token = os.environ.get("DISCORD_TOKEN")
 tenorapi = os.environ.get("TENOR_API_KEY")
 weatherapi = os.environ.get("WEATHER_API_KEY")

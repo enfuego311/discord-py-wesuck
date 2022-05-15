@@ -287,7 +287,7 @@ async def weather(ctx, *, search):
     weatherdata = json.loads(await weatheresp.text())
     # create the map url for the embed
     locmapurl = 'https://maps.googleapis.com/maps/api/staticmap?center=' + \
-        geolat + ',' + geolon + '&zoom=11&size=600x200&key=' + googleapi
+        geolat + ',' + geolon + '&zoom=11&size=600x300&key=' + googleapi
     temp = str(weatherdata['main']['temp'])
     city = weatherdata['name']
     country = weatherdata['sys']['country']

@@ -310,7 +310,7 @@ async def weather(ctx, *, search):
 # either random lines or react to wotd with emoji
 @bot.event
 async def on_message(message):
-#    nicepattern = r".*\bnice\b\W*"
+    nicepattern = r".*\bnice\b\W*"
     namestr = "marcus"
     moviestr = "movie night"
     herzogstr = "herzog"
@@ -347,9 +347,9 @@ async def on_message(message):
         await wotdreact(message)
 
     # nice reaction
-    #sequence = message.content.lower()
-    #if re.match(nicepattern, sequence):
-        #await nicereact(message)
+    sequence = message.content.lower()
+    if re.match(nicepattern, sequence):
+        await nicereact(message)
 
     # bofh regex
     if re.match(bofhpattern, sequence):

@@ -315,7 +315,7 @@ async def on_message(message):
     moviestr = "movie night"
     herzogstr = "herzog"
     herstr = "amanda"
-    kartstr = "kart game"
+    kartstr = "kart"
     mariostr = "mario game"
     ff2str = "ff2"
     typongstr = "typong"

@@ -366,10 +366,10 @@ async def on_message(message):
         await channel.send("At least until operation: kill wife and kids")
 
     if kartstr.lower() in message.content.lower():
-        await channel.send("**Official We Suck Mario Kart Ranking** - 8 > SNES > 64 > 7 > Wii > GBA > DS > DD")
+        await channel.send("**Official We Suck Mario Kart Ranking** - 8 > 64 > SNES > DD > 7 > Wii > DS > GBA")
     
     if mariostr.lower() in message.content.lower():
-        await channel.send("**Official We Suck Mario Ranking** - Odyssey > 64 > World 2 > 3 > World > 3D World > Galaxy > 1 > 2 > Galaxy 2 > Sunshine")
+        await channel.send("**Official We Suck Super Mario Ranking** - Odyssey > 64 > World > 3 > World 2 = Galaxy = Galaxy 2 = Fury > 3D World > 3D Land > Sunshine > 1 > 2 = Land 2 > New DS = New Wii > New U > New 2 > Land > Lost")
     
     if ff2str.lower() in message.content.lower():
         await channel.send("The thing about civilization is that we are all 72 hours away from pure cannibalistic anarchy. That clock gets reset everytime we eat, everytiem we sleep but all of life as know it are on a precipice. FF2 was about 48 hrs for me. Everything you know and care about means nothing. That's the reality of culture and civilzation. It's an absolute cosmic shadow held up by essentially nothing. Final fantasy 2 taught me that.")
@@ -378,13 +378,13 @@ async def on_message(message):
        await channel.send("Don't make fun of my typong")
     
     if ffstr.lower() in message.content.lower():
-        await channel.send("**Official We Suck Final Fantasy Ranking** - FF6 > FF4 > FF7 > FF9 > FF15 > FF10 > FF12 > FF1 > FF5 > FF8 > FF3 > FF13 > FF2")
+        await channel.send("**Official We Suck Final Fantasy Ranking** - FF7R > FF6 > FF7 > FF9 > FF10 > FF15 > FF4 > FF12 > FF5 > FF10-2 > FF3 > FF1 > FF8 > MQ > FF2 > FF13")
 
     if neatostr.lower() in message.content.lower():
        await channel.send("neato burrito")
 
     if zeldastr.lower() in message.content.lower():
-       await channel.send("**Official We Suck Zelda Ranking** - BotW > LttP > LBW > OoT > WW > LoZ > LA > TP > MM > AoL > SS")
+       await channel.send("**Official We Suck Zelda Ranking** - BotW > Minish > ALBW > ALttP > LA = WW > OoT > Oracle > MM > LoZ > TP > SS > AoL = PH > FSA > ST = TFH")
     
     if titwstr.lower() in message.content.lower():
         await channel.send("This is the way.")

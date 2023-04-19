@@ -1,29 +1,52 @@
 import os
 import sys
 import discord
+intents = discord.Intents.all()
+intents.typing = False
+intents.presences = False
+import enchant
 import re
+import ssl
+from OpenSSL import crypto
+import requests
+import socket
+from io import BytesIO
 import json
 import aiohttp
 import asyncio
+import subprocess
+from langdetect import detect
 from discord.ext import commands
 import random
+import datetime
 from datetime import datetime
 from datetime import date
 from datetime import time
 from datetime import timedelta
 from aiocfscrape import CloudflareScraper
-from spellchecker import SpellChecker
 
 # discord and API tokens need to be environment variables named as below
-token = os.environ.get("DISCORD_TOKEN")
-tenorapi = os.environ.get("TENOR_API_KEY")
-weatherapi = os.environ.get("WEATHER_API_KEY")
-googleapi = os.environ.get("GOOGLE_API_KEY")
-
+token = os.getenv('DISCORD_TOKEN')
+tenorapi = os.getenv('TENOR_API_KEY')
+weatherapi = os.getenv('WEATHER_API_KEY')
+googleapi = os.getenv('GOOGLE_API_KEY')
+reourl = os.getenv('REOURL')
 description = '''To seek and annoy'''
+giphy_api_key = os.getenv('GIPHY_API_KEY')
 
-# set command prefix
-bot = commands.Bot(command_prefix='.', description=description)
+client = commands.Bot(command_prefix='.', description=description, intents=intents)
+dictionary = enchant.Dict("en_US")
+
+#allowed users for repeat command
+allowed_ids = [340495492377083905, 181093076960411648]
+
+@client.event
+async def on_ready():
+    await client.change_presence(activity=discord.Game(name="Possum"))
+    print('Logged in as')
+    print(client.user.name)
+    print(client.user.id)
+    print('------')
 
 # random line function for word matching
 def random_line(fname):
@@ -31,14 +54,6 @@ def random_line(fname):
     return random.choice(lines)
 
 
-
-# if we see this the bot is alive
-@bot.event
-async def on_ready():
-    print('Logged in as')
-    print(bot.user.name)
-    print(bot.user.id)
-    print('------')
 
 # check if seed is set
 # if not that means word of the day (wotd) isn't set so run the exception code
@@ -86,8 +101,6 @@ async def nicereact(message):
     nice_emoji = "<:69:844757057437302856>"
     await message.add_reaction(nice_emoji)
 
-
-
 # function that does what it says - also works for times spanning midnight
 async def is_time_between(begin_time, end_time, check_time=None):
     # If check time is not given, default to current time
@@ -98,7 +111,7 @@ async def is_time_between(begin_time, end_time, check_time=None):
         return check_time >= begin_time or check_time <= end_time
 
 # clap!👏
-@bot.command(
+@client.command(
     pass_context=True,
     help="Put a clap emoji between every word.",
     brief="I will clap for you."
@@ -110,7 +123,7 @@ async def clap(ctx, *, claptext):
     await ctx.send(str(clapjoin) + clapemoji)
 
 # spongebob text into alternating case SaRcAsM
-@bot.command(
+@client.command(
     pass_context=True,
     help="Changes text provided into alternating case spongebob sarcastic memery.",
     brief="Spongebob your text."
@@ -127,7 +140,7 @@ async def sb(ctx, *, sbtext):
     await ctx.send(str(res))
 
 # why not both?
-@bot.command(
+@client.command(
     pass_context=True,
     help="Combines the awesome of sb and clap.",
     brief="Why not both?"
@@ -146,33 +159,8 @@ async def sbclap(ctx, *, sbclaptext):
     await ctx.send(sbemoji)
     await ctx.send(str(clapjoin) + clapemoji)
 
-# top result tenor match command
-@bot.command(
-    pass_context=True, 
-    help="Sends a query to Tenor to get the top match based on your search terms.", 
-    brief="Tenor top gif."
-)
-async def sgif(ctx, *, search):
-    confilter = "low"
-    embed = discord.Embed(colour=discord.Colour.blue())
-    session = aiohttp.ClientSession()
-    search.replace(' ', '+')
-    response = await session.get('http://api.tenor.com/v1/search?key=' + tenorapi + '&q=' + search + '&contentfilter=' + confilter + '&limit=1&media_filter=minimal')
-    data = json.loads(await response.text())
-    embed.set_image(url=data['results'][0]['media'][0]['gif']['url'])
-
-    await session.close()
-
-    await ctx.send(embed=embed)
-
-
-async def cs_page(url):
-    async with CloudflareScraper() as session:
-        async with session.get(url) as resp:
-            return await resp.text()
-
 # inspire me
-@bot.command(
+@client.command(
     pass_context=True,
     help="Generates an image from inspirobot.",
     brief="Inpsire me."
@@ -183,27 +171,8 @@ async def inspire(ctx):
     embed.set_image(url=response)
     await ctx.send(embed=embed)
 
-# random result tenor match command
-@bot.command(
-    pass_context=True, 
-    help="Sends a query to Tenor to get a random match based on your search terms.", 
-    brief="Tenor random gif."
-)
-async def gif(ctx, *, search):
-    confilter = "low"
-    embed = discord.Embed(colour=discord.Colour.blue())
-    session = aiohttp.ClientSession()
-    search.replace(' ', '+')
-    response = await session.get('http://api.tenor.com/v1/random?key=' + tenorapi + '&q=' + search + '&contentfilter=' + confilter + '&limit=1&media_filter=minimal')
-    data = json.loads(await response.text())
-    embed.set_image(url=data['results'][0]['media'][0]['gif']['url'])
-
-    await session.close()
-
-    await ctx.send(embed=embed)
-
 # get today's word
-@bot.command(
+@client.command(
     pass_context=True,
     help="This will return today's word of the day between 8pm and 12pm eastern.",
     brief="Get today's word."
@@ -215,7 +184,7 @@ async def wotd(ctx):
         await ctx.send("We don't talk about the word of the day until after 8pm eastern.")
 
 # get yesterday's word
-@bot.command(
+@client.command(
     pass_context=True,
     help="This will return yesterday's word of the day.",
     brief="Get yesterday's word."
@@ -223,54 +192,60 @@ async def wotd(ctx):
 async def ywotd(ctx):
     await ctx.send("Yesterday's word of the day was: **" + sywotd + "**")
 
-# the WTF command
-# gets the last message from mentioned user in the current channel and spell corrects it
-@bot.command(
-    pass_context="True",
-    help="If a user is mentioned using an @, it will get the last msg by them and spellcheck it.",
-    brief="Spellcheck a mentioned user's last msg."
-)
-async def wtf(ctx, user: discord.User):
-    # init lastMessage
-    lastMessage = None
-    # identify what channel this was asked in
-    channel = ctx.channel
-    # check history for the latest message
-    fetchMessage = await channel.history().find(lambda m: m.author.id == user.id)
+@client.command()
+async def driveway(ctx):
 
-    # loop to find the newest message by comparing creation times
-    if lastMessage is None:
-        lastMessage = fetchMessage
-    else:
-        if fetchMessage.created_at > lastMessage.created_at:
-            lastMessage = fetchMessage
+    # Download the image data using requests
+    response = requests.get(reourl)
+    image_data = response.content
 
-    # if a message is found, run the spell check sequence
-    if (lastMessage is not None):
-        spell = SpellChecker()
-        # init the working message as a copy of the actual message
-        workmsg = lastMessage.content
-        # split the message into words
-        msgwords = lastMessage.content.split()
-        # spell check every word
-        for word in msgwords:
-            # sanity check for alpha characters
-            word = ''.join(filter(str.isalpha, word))
-            # this tests if there is a correction for the word
-            test = spell.correction(word)
-            # if the word has changed, it has been corrected
-            if test != word:
-                # replace this word in the working message
-                workmsg = workmsg.replace(word, test)
-            else: 
-                pass
-            
-        await ctx.send('"' + workmsg + '"')
+    # Wrap the image data in a BytesIO object to create a file-like object
+    file = BytesIO(image_data)
+    file.name = "image.jpg"
 
-# weather command
-@bot.command(
-    pass_context=True, 
-    help="This will query the google maps api to get the latitude and longitude. Using that it will query the OpenWeather API for local conditions.", 
+    # Create an embedded message with the file
+    embed = discord.Embed(title="A Driveway", description="Here's a picture of a driveway:")
+    embed.set_image(url="attachment://image.jpg")
+
+    # Send the message with the embedded file
+    await ctx.send(file=discord.File(file), embed=embed)
+
+
+@client.command(name='sgif')
+async def search_gif(ctx, *args):
+    # Parse the user's input to extract the search query
+    search_query = ' '.join(args)
+
+    # Retrieve the most popular GIF from the Giphy API based on the search query
+    response = requests.get(f'http://api.giphy.com/v1/gifs/search?q={search_query}&api_key={giphy_api_key}&limit=1&rating=g&sort=popularity')
+    gif_url = response.json()['data'][0]['images']['original']['url']
+
+    # Create an embed with the GIF and send it to the Discord channel
+    embed = discord.Embed()
+    embed.set_image(url=gif_url)
+    await ctx.send(embed=embed)
+
+@client.command(name='ping')
+async def ping_host(ctx, host):
+    try:
+        # Run the ping command and capture the output
+        process = subprocess.Popen(['ping', '-c', '3', host], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output, error = process.communicate()
+
+        # Extract the round-trip time from the output
+        output_str = output.decode('utf-8')
+        rtts = [float(x.split('=')[-1].split(' ')[0]) for x in output_str.split('\n') if 'time=' in x]
+
+        # Calculate the average round-trip time and send it to the Discord channel
+        avg_rtt = sum(rtts) / len(rtts)
+        await ctx.send(f'Average round-trip time to {host}: {avg_rtt:.2f} ms')
+
+    except Exception as e:
+        await ctx.send(f'Error: {e}')
+
+@client.command(
+    pass_context=True,
+    help="This will query the google maps api to get the latitude and longitude. Using that it will query the OpenWeather API for local conditions.",
     brief="Weather for the location specified."
 )
 async def weather(ctx, *, search):
@@ -294,21 +269,66 @@ async def weather(ctx, *, search):
     cond = weatherdata['weather'][0]['description']
     feelslike = str(weatherdata['main']['feels_like'])
     humidity = str(weatherdata['main']['humidity'])
+    wind_speed = str(weatherdata['wind']['speed'])
     # populate the embed with returned values
-    embed = discord.Embed(title="Weather for " + city +
-                          " " + country, colour=discord.Colour.blue())
+    embed = discord.Embed(title="Weather for " + city + " " + country, colour=discord.Colour.blue())
     embed.set_image(url=locmapurl)
-    embed.add_field(name="Current Temp (Feels Like)",
-                    value=temp + "F" + " " + "(" + feelslike + "F)")
+    embed.add_field(name="Current Temp (Feels Like)", value=temp + "F" + " " + "(" + feelslike + "F)")
     embed.add_field(name="Conditions", value=cond)
+    embed.add_field(name="Wind Speed", value=wind_speed + " mph")
     embed.add_field(name="Humidity", value=humidity + "%")
     await session.close()
     await session2.close()
     await ctx.send(embed=embed)
 
+@client.command(name="wtf")
+async def wtf_command(ctx, member: discord.Member):
+    # get the previous message in the channel from the specified member
+    async for msg in ctx.channel.history(limit=2):
+        if msg.id != ctx.message.id and msg.author == member and not msg.author.bot and not msg.content.startswith('.'):
+            text = msg.content
+            # remove punctuation and split the message into words
+            words = [word.strip('.,?!') for word in text.split()]
+            # check each word for spelling errors
+            misspelled = [word for word in words if not dictionary.check(word)]
+            if len(misspelled) > 0:
+                # if misspellings were found, correct them and respond with a corrected message
+                corrected = [dictionary.suggest(word)[0] if not dictionary.check(word) else word for word in words]
+                corrected_msg = "I think {} meant to say: \"{}\"".format(member.mention, " ".join(corrected))
+                await ctx.send(corrected_msg)
+            return
+
+@client.command()
+async def ip(ctx):
+    ip = requests.get('https://api.ipify.org').text
+    await ctx.send(f"My public IP: {ip}")
+
+@client.command()
+async def sslexpiry(ctx, url: str):
+    try:
+        cert = ssl.get_server_certificate((url, 443))
+        x509 = crypto.load_certificate(crypto.FILETYPE_PEM, cert)
+        not_after = x509.get_notAfter().decode('ascii')
+        expiry_date = datetime.strptime(not_after, '%Y%m%d%H%M%SZ')
+        await ctx.send(f'The SSL certificate for {url} will expire on {expiry_date}.')
+    except ssl.SSLError:
+        await ctx.send(f'Error: Unable to retrieve SSL certificate for {url}.')
+    except socket.gaierror:
+        await ctx.send(f'Error: Unable to connect to {url}. Please check the URL and try again.')
+
+@client.command()
+async def repeat(ctx, channel_mention, *, message):
+    if ctx.author.id not in allowed_ids:
+        await ctx.send("You are not allowed to use this command.")
+        return
+
+    channel_id = re.findall(r'\d+', channel_mention)[0]
+    channel = client.get_channel(int(channel_id))
+    await channel.send(message)
+
 # match various patterns including word of the day and respond with
 # either random lines or react to wotd with emoji
-@bot.event
+@client.event
 async def on_message(message):
     nicepattern = r".*\bnice\b\W*"
     namestr = "marcus"
@@ -324,15 +344,23 @@ async def on_message(message):
     zeldastr = "zelda"
     titwstr = "this is the way"
     bofhpattern = r".*\berror\b\W*"
+    daystr = "what a day"
     # this is the *real* bot username - not the nickname
-    botstr = bot.user.name
+    botstr = client.user.name
 
     # what channel is this? needed for channel.send
     channel = message.channel
-    
-    # bot ignores botself
-    if message.author.id == bot.user.id:
-            return
+
+    if message.author == client.user:
+        return
+
+    # Detect the language of the message
+    lang = detect(message.content)
+
+    # If the message is in Russian, send "our robot, comrade" in Russian
+    if lang == 'ru':
+        await message.channel.send('Наш робот, товарищ')
+
 
     # reacts to namestr if not botstr
     if (namestr.lower() in message.content.lower()) and (botstr.lower() not in message.content.lower()):
@@ -388,8 +416,10 @@ async def on_message(message):
     
     if titwstr.lower() in message.content.lower():
         await channel.send("This is the way.")
+    
+    if daystr.lower() in message.content.lower():
+        await channel.send("Tell me about it")
         
     # this keeps us from getting stuck in this function
-    await bot.process_commands(message)
-
-bot.run(token)
+    await client.process_commands(message)
+client.run(token)

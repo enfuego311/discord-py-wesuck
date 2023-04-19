@@ -2,4 +2,6 @@ discord
 aiohttp
 aiocfscrape
 pyspellchecker
+pyenchant
+langdetect
 

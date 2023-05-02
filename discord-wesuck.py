@@ -27,7 +27,7 @@ from aiocfscrape import CloudflareScraper
 import openai
 
 # start an instance of the completion engine
-completion_engine = openai.Completion()
+# completion_engine = openai.Completion()
 
 # discord and API tokens need to be environment variables named as below
 openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -114,6 +114,20 @@ async def is_time_between(begin_time, end_time, check_time=None):
         return check_time >= begin_time and check_time <= end_time
     else: # crosses midnight
         return check_time >= begin_time or check_time <= end_time
+
+async def gpt_response(prompt):
+    completion = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "user", "content": prompt}
+        ]
+    )
+    return completion.choices[0].message.content
+
+@client.command(name="gpt", help="Ask GPT-3.5 Turbo a question or send a message")
+async def gpt(ctx, *, prompt: str):
+    response = await gpt_response(prompt)
+    await ctx.send(response)
 
 # clap!👏
 @client.command(
@@ -358,6 +372,22 @@ async def on_message(message):
 
     if message.author == client.user:
         return
+    
+### OPENAI BOT CODE ###
+#
+#    # Select a single user to respond to
+#    #comment real target for now
+#    #target_user = 209887845337268224
+#    target_user = 340495492377083905
+#
+#   # Respond to 1% of the target user's messages
+#    if message.author == target_user and random.random() < 1:
+#        prompt = message.content
+#        response = generate_response(prompt)
+#        await message.channel.send(response)
+#
+#
+### END OPENAI CODE ###
 
     # Detect the language of the message
     lang = detect(message.content)
@@ -427,4 +457,5 @@ async def on_message(message):
         
     # this keeps us from getting stuck in this function
     await client.process_commands(message)
+
 client.run(token)

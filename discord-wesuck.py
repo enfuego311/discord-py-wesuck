@@ -24,8 +24,13 @@ from datetime import date
 from datetime import time
 from datetime import timedelta
 from aiocfscrape import CloudflareScraper
+import openai
+
+# start an instance of the completion engine
+completion_engine = openai.Completion()
 
 # discord and API tokens need to be environment variables named as below
+openai.api_key = os.getenv('OPENAI_API_KEY')
 token = os.getenv('DISCORD_TOKEN')
 tenorapi = os.getenv('TENOR_API_KEY')
 weatherapi = os.getenv('WEATHER_API_KEY')

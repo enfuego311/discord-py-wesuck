@@ -124,10 +124,13 @@ async def gpt_response(prompt):
     )
     return completion.choices[0].message.content
 
+
 @client.command(name="gpt", help="Ask GPT-3.5 Turbo a question or send a message")
 async def gpt(ctx, *, prompt: str):
     response = await gpt_response(prompt)
     await ctx.send(response)
+
+
 
 # clap!👏
 @client.command(
@@ -350,7 +353,7 @@ async def repeat(ctx, channel_mention, *, message):
 @client.event
 async def on_message(message):
     nicepattern = r".*\bnice\b\W*"
-    namestr = "marcus"
+#    namestr = "marcus"
     moviestr = "movie night"
     herzogstr = "herzog"
     herstr = "amanda"
@@ -364,11 +367,13 @@ async def on_message(message):
     titwstr = "this is the way"
     bofhpattern = r".*\berror\b\W*"
     daystr = "what a day"
+
     # this is the *real* bot username - not the nickname
     botstr = client.user.name
 
     # what channel is this? needed for channel.send
     channel = message.channel
+    target_user = 209887845337268224
 
     if message.author == client.user:
         return
@@ -393,14 +398,19 @@ async def on_message(message):
     lang = detect(message.content)
 
     # If the message is in Russian, send "our robot, comrade" in Russian
+    if message.author == target_user and random.random() < 0.01:
+        prompt = message.content
+        response = gpt_response(prompt)
+        await message.channel.send(response)
+
     if lang == 'ru':
         await message.channel.send('Наш робот, товарищ')
 
 
     # reacts to namestr if not botstr
-    if (namestr.lower() in message.content.lower()) and (botstr.lower() not in message.content.lower()):
-        await channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
-    elif botstr.lower() in message.content.lower():
+#    if (namestr.lower() in message.content.lower()) and (botstr.lower() not in message.content.lower()):
+#        await channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
+    if botstr.lower() in message.content.lower():
         line = random_line(os.path.join(sys.path[0], 'botmention.txt'))
         response = line.replace("BOT", botstr)
         await channel.send(response)

@@ -353,7 +353,7 @@ async def repeat(ctx, channel_mention, *, message):
 @client.event
 async def on_message(message):
     nicepattern = r".*\bnice\b\W*"
-#    namestr = "marcus"
+    namestr = "marcus"
     moviestr = "movie night"
     herzogstr = "herzog"
     herstr = "amanda"
@@ -373,36 +373,16 @@ async def on_message(message):
 
     # what channel is this? needed for channel.send
     channel = message.channel
-    target_user = 209887845337268224
 
     if message.author == client.user:
         return
     
-### OPENAI BOT CODE ###
-#
-#    # Select a single user to respond to
-#    #comment real target for now
-#    #target_user = 209887845337268224
-#    target_user = 340495492377083905
-#
-#   # Respond to 1% of the target user's messages
-#    if message.author == target_user and random.random() < 1:
-#        prompt = message.content
-#        response = generate_response(prompt)
-#        await message.channel.send(response)
-#
-#
-### END OPENAI CODE ###
-
-    # Detect the language of the message
-    lang = detect(message.content)
-
-    # If the message is in Russian, send "our robot, comrade" in Russian
-    if message.author == target_user and random.random() < 0.01:
-        prompt = message.content
-        response = gpt_response(prompt)
+    if namestr.lower() in message.content.lower():
+        response = await gpt_response(message.content)
         await message.channel.send(response)
 
+    # If the message is in Russian, send "our robot, comrade" in Russian
+    lang = detect(message.content)
     if lang == 'ru':
         await message.channel.send('Наш робот, товарищ')
 

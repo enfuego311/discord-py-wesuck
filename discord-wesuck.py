@@ -36,6 +36,7 @@ tenorapi = os.getenv('TENOR_API_KEY')
 weatherapi = os.getenv('WEATHER_API_KEY')
 googleapi = os.getenv('GOOGLE_API_KEY')
 reourl = os.getenv('REOURL')
+reourl2 = os.getenv('REOURL2')
 description = '''To seek and annoy'''
 giphy_api_key = os.getenv('GIPHY_API_KEY')
 
@@ -47,7 +48,7 @@ allowed_ids = [340495492377083905, 181093076960411648]
 
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Game(name="Possum"))
+    await client.change_presence(activity=discord.Game(name="Raccoon"))
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
@@ -232,6 +233,23 @@ async def driveway(ctx):
     # Send the message with the embedded file
     await ctx.send(file=discord.File(file), embed=embed)
 
+@client.command()
+async def backyard(ctx):
+
+    # Download the image data using requests
+    response = requests.get(reourl2)
+    image_data = response.content
+
+    # Wrap the image data in a BytesIO object to create a file-like object
+    file = BytesIO(image_data)
+    file.name = "image.jpg"
+
+    # Create an embedded message with the file
+    embed = discord.Embed(title="A Back Yard", description="Here's a picture of a back yard:")
+    embed.set_image(url="attachment://image.jpg")
+
+    # Send the message with the embedded file
+    await ctx.send(file=discord.File(file), embed=embed)
 
 @client.command(name='sgif')
 async def search_gif(ctx, *args):

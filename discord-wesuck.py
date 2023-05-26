@@ -237,7 +237,7 @@ async def driveway(ctx):
 async def backyard(ctx):
 
     # Download the image data using requests
-    response = requests.get(reourl2)
+    response = requests.get(reourl2, verify=False)
     image_data = response.content
 
     # Wrap the image data in a BytesIO object to create a file-like object

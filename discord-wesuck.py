@@ -119,6 +119,7 @@ async def is_time_between(begin_time, end_time, check_time=None):
 async def gpt_response(prompt):
     completion = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
+        temperature="0.2",
         messages=[
             {"role": "user", "content": prompt}
         ]

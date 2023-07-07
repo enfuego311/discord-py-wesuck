@@ -1,4 +1,5 @@
 import os
+import csv
 import sys
 import discord
 intents = discord.Intents.all()
@@ -131,7 +132,37 @@ async def gpt(ctx, *, prompt: str):
     response = await gpt_response(prompt)
     await ctx.send(response)
 
+@client.command(name="movie", help="wip")
+async def movie(ctx, movie_name):
+    if ctx.channel.id != 880880377156231188:  # Replace with your desired channel ID
+        return
+    with open('movies.csv', newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            if movie_name.lower() in row['Movie Name'].lower():
+                embed = discord.Embed(title=row['Movie Name'], color=discord.Color.green())
+                embed.add_field(name='View Date', value=row['View Date'])
+                embed.add_field(name='Tier', value=row['Tier'])
+                embed.add_field(name='RT', value=row['RT'])
+                embed.add_field(name='RTA', value=row['RTA'])
+                embed.add_field(name='Fumble Expectation', value=row['Fumble Expectation'])
+                embed.add_field(name='Fumble Execution', value=row['Fumble Execution'])
+                embed.add_field(name='Fumble Entertainment', value=row['Fumble Entertainment'])
+                embed.add_field(name='Fumble Recommendation', value=row['Fumble Recommendation'])
+                embed.add_field(name='Hylas Expectation', value=row['Hylas Expectation'])
+                embed.add_field(name='Hylas Execution', value=row['Hylas Execution'])
+                embed.add_field(name='Hylas Entertainment', value=row['Hylas Entertainment'])
+                embed.add_field(name='Hylas Recommendation', value=row['Hylas Recommendation'])
+                embed.add_field(name='Enfuego Recommendation', value=row['Enfuego Recommendation'])
+                embed.add_field(name='illusion Expectation', value=row['illusion Expectation'])
+                embed.add_field(name='illusion Execution', value=row['illusion Execution'])
+                embed.add_field(name='illusion Entertainment', value=row['illusion Entertainment'])
+                embed.add_field(name='illusion Recommendation', value=row['illusion Recommendation'])
+                await ctx.send(embed=embed)
+                return
 
+    # If movie not found
+    await ctx.send("Movie not found.")
 
 # clap!👏
 @client.command(

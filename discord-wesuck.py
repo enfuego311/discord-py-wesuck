@@ -136,34 +136,47 @@ async def gpt(ctx, *, prompt: str):
 async def movie(ctx, movie_name):
     if ctx.channel.id != 880880377156231188:  # Replace with your desired channel ID
         return
-    with open('movies.csv', newline='') as csvfile:
-        reader = csv.DictReader(csvfile)
+async def search(ctx, movie_name):
+    # Open the movies.csv file
+    with open('movies.csv', 'r') as file:
+        reader = csv.DictReader(file)
+        matches = []
+        
+        # Search for matching movies
         for row in reader:
             if movie_name.lower() in row['Movie Name'].lower():
-                embed = discord.Embed(title=row['Movie Name'], color=discord.Color.green())
-                embed.add_field(name='View Date', value=row['View Date'])
-                embed.add_field(name='Tier', value=row['Tier'])
-                embed.add_field(name='RT', value=row['RT'])
-                embed.add_field(name='RTA', value=row['RTA'])
-                embed.add_field(name='Fumble Expectation', value=row['Fumble Expectation'])
-                embed.add_field(name='Fumble Execution', value=row['Fumble Execution'])
-                embed.add_field(name='Fumble Entertainment', value=row['Fumble Entertainment'])
-                embed.add_field(name='Fumble Recommendation', value=row['Fumble Recommendation'])
-                embed.add_field(name='Hylas Expectation', value=row['Hylas Expectation'])
-                embed.add_field(name='Hylas Execution', value=row['Hylas Execution'])
-                embed.add_field(name='Hylas Entertainment', value=row['Hylas Entertainment'])
-                embed.add_field(name='Hylas Recommendation', value=row['Hylas Recommendation'])
-                embed.add_field(name='Enfuego Recommendation', value=row['Enfuego Recommendation'])
-                embed.add_field(name='illusion Expectation', value=row['illusion Expectation'])
-                embed.add_field(name='illusion Execution', value=row['illusion Execution'])
-                embed.add_field(name='illusion Entertainment', value=row['illusion Entertainment'])
-                embed.add_field(name='illusion Recommendation', value=row['illusion Recommendation'])
-                await ctx.send(embed=embed)
-                return
-
-    # If movie not found
-    await ctx.send("Movie not found.")
-
+                matches.append(row)
+                if len(matches) >= 3:
+                    break
+        
+        if len(matches) > 0:
+            # Create an embed to display the matching movies
+            embed = discord.Embed(title='Movie Search Results', color=discord.Color.green())
+            for match in matches:
+                embed.add_field(name='Movie Name', value=match['Movie Name'], inline=False)
+                embed.add_field(name='View Date', value=match['View Date'], inline=False)
+                embed.add_field(name='RT', value=match['RT'], inline=False)
+                embed.add_field(name='RTA', value=match['RTA'], inline=False)
+                embed.add_field(name='Fumble Expectation', value=match['Fumble Expectation'], inline=False)
+                embed.add_field(name='Fumble Execution', value=match['Fumble Execution'], inline=False)
+                embed.add_field(name='Fumble Entertainment', value=match['Fumble Entertainment'], inline=False)
+                embed.add_field(name='Fumble Recommendation', value=match['Fumble Recommendation'], inline=False)
+                embed.add_field(name='Hylas Expectation', value=match['Hylas Expectation'], inline=False)
+                embed.add_field(name='Hylas Execution', value=match['Hylas Execution'], inline=False)
+                embed.add_field(name='Hylas Entertainment', value=match['Hylas Entertainment'], inline=False)
+                embed.add_field(name='Hylas Recommendation', value=match['Hylas Recommendation'], inline=False)
+                embed.add_field(name='Enfuego Recommendation', value=match['Enfuego Recommendation'], inline=False)
+                embed.add_field(name='illusion Expectation', value=match['illusion Expectation'], inline=False)
+                embed.add_field(name='illusion Execution', value=match['illusion Execution'], inline=False)
+                embed.add_field(name='illusion Entertainment', value=match['illusion Entertainment'], inline=False)
+                embed.add_field(name='illusion Recommendation', value=match['illusion Recommendation'], inline=False)
+                embed.add_field(name='guil Recommendation', value=match['guil Recommendation'], inline=False)
+                embed.add_field(name='\u200b', value='\u200b', inline=False)  # Add an empty field for spacing
+            
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send('No matching movies found.')
+            
 # clap!👏
 @client.command(
     pass_context=True,

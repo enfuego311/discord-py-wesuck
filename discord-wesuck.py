@@ -429,9 +429,9 @@ async def on_message(message):
     if message.author == client.user:
         return
     
-    if namestr.lower() in message.content.lower():
-        response = await gpt_response(message.content)
-        await message.channel.send(response)
+#    if namestr.lower() in message.content.lower():
+#        response = await gpt_response(message.content)
+#        await message.channel.send(response)
 
     # If the message is in Russian, send "our robot, comrade" in Russian
     lang = detect(message.content)
@@ -440,8 +440,8 @@ async def on_message(message):
 
 
     # reacts to namestr if not botstr
-#    if (namestr.lower() in message.content.lower()) and (botstr.lower() not in message.content.lower()):
-#        await channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
+    if (namestr.lower() in message.content.lower()) and (botstr.lower() not in message.content.lower()):
+        await channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
     if botstr.lower() in message.content.lower():
         line = random_line(os.path.join(sys.path[0], 'botmention.txt'))
         response = line.replace("BOT", botstr)

@@ -253,7 +253,7 @@ async def ywotd(ctx):
 async def driveway(ctx):
 
     # Download the image data using requests
-    response = requests.get(reourl)
+    response = requests.get(reourl, verify=False)
     image_data = response.content
 
     # Wrap the image data in a BytesIO object to create a file-like object

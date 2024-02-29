@@ -40,7 +40,6 @@ reourl = os.getenv('REOURL')
 reourl2 = os.getenv('REOURL2')
 description = '''To seek and annoy'''
 giphy_api_key = os.getenv('GIPHY_API_KEY')
-data = read_data_from_file(filename)
 client = commands.Bot(command_prefix='.', description=description, intents=intents)
 dictionary = enchant.Dict("en_US")
 channel = message.channel   
@@ -383,7 +382,6 @@ async def on_message(message):
                     keyword, response = parts
                     data[keyword.lower()] = response
         return data
-
     # Replace 'your_file.txt' with the actual filename
     filename = 'keyword_response.txt'  # Replace with the actual filename
     data = read_data_from_file(filename)

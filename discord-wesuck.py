@@ -40,7 +40,6 @@ reourl = os.getenv('REOURL')
 reourl2 = os.getenv('REOURL2')
 description = '''To seek and annoy'''
 giphy_api_key = os.getenv('GIPHY_API_KEY')
-filename = 'keyword_response.txt'  # Replace with the actual filename
 data = read_data_from_file(filename)
 client = commands.Bot(command_prefix='.', description=description, intents=intents)
 dictionary = enchant.Dict("en_US")
@@ -374,7 +373,6 @@ async def repeat(ctx, channel_mention, *, message):
 # either random lines or react to wotd with emoji
 
 @client.event
-# Check if a keyword exists in the message content and send the corresponding response
 async def on_message(message):
     def read_data_from_file(filename):
         data = {}
@@ -385,9 +383,15 @@ async def on_message(message):
                     keyword, response = parts
                     data[keyword.lower()] = response
         return data
+
+    # Replace 'your_file.txt' with the actual filename
+    filename = 'keyword_response.txt'  # Replace with the actual filename
+    data = read_data_from_file(filename)
+
     for keyword, response in data.items():
         if keyword.lower() in message.content.lower():
             await message.channel.send(response)
+
     await client.process_commands(message)
 
 @client.event

@@ -51,15 +51,7 @@ allowed_ids = [340495492377083905, 181093076960411648]
 
 #define the function for keyword and response
 # Read data from a file delimited by word::response
-def read_data_from_file(filename):
-    data = {}
-    with open(filename, 'r') as file:
-        for line in file:
-            parts = line.strip().split("::")
-            if len(parts) == 2:
-                keyword, response = parts
-                data[keyword.lower()] = response
-    return data
+
 
 @client.event
 async def on_ready():
@@ -384,6 +376,15 @@ async def repeat(ctx, channel_mention, *, message):
 @client.event
 # Check if a keyword exists in the message content and send the corresponding response
 async def on_message(message):
+    def read_data_from_file(filename):
+    data = {}
+    with open(filename, 'r') as file:
+        for line in file:
+            parts = line.strip().split("::")
+            if len(parts) == 2:
+                keyword, response = parts
+                data[keyword.lower()] = response
+    return data
     for keyword, response in data.items():
         if keyword.lower() in message.content.lower():
             await message.channel.send(response)

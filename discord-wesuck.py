@@ -42,7 +42,6 @@ description = '''To seek and annoy'''
 giphy_api_key = os.getenv('GIPHY_API_KEY')
 client = commands.Bot(command_prefix='.', description=description, intents=intents)
 dictionary = enchant.Dict("en_US")
-channel = message.channel   
 
 #allowed users for repeat command
 allowed_ids = [340495492377083905, 181093076960411648]

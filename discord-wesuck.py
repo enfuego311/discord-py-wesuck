@@ -51,7 +51,7 @@ allowed_ids = [340495492377083905, 181093076960411648]
 
 #define the function for keyword and response
 # Read data from a file delimited by word::response
-async def read_data_from_file(filename):
+def read_data_from_file(filename):
     data = {}
     with open(filename, 'r') as file:
         for line in file:

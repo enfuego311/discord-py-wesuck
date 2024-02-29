@@ -373,7 +373,7 @@ async def repeat(ctx, channel_mention, *, message):
 
 @client.event
 async def on_message(message):
-    def read_data_from_file(filename):
+    async def read_data_from_file(filename):
         data = {}
         with open(filename, 'r') as file:
             for line in file:

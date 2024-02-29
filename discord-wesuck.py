@@ -44,6 +44,7 @@ filename = 'keyword_response.txt'  # Replace with the actual filename
 data = read_data_from_file(filename)
 client = commands.Bot(command_prefix='.', description=description, intents=intents)
 dictionary = enchant.Dict("en_US")
+channel = message.channel   
 
 #allowed users for repeat command
 allowed_ids = [340495492377083905, 181093076960411648]
@@ -417,29 +418,5 @@ async def on_message(message):
 async def on_message(message):
     if herzogstr.lower() in message.content.lower():
         await channel.send(random_line(os.path.join(sys.path[0], 'herzog.txt')))
-
-
-@client.event
-
-    # this is the *real* bot username - not the nickname
-    botstr = client.user.name
-
-    # what channel is this? needed for channel.send
-    channel = message.channel
-
-    if message.author == client.user:
-        return
-    
-#    if namestr.lower() in message.content.lower():
-#        response = await gpt_response(message.content)
-#        await message.channel.send(response)
-
-    # If the message is in Russian, send "our robot, comrade" in Russian
-    lang = detect(message.content)
-    if lang == 'ru':
-        await message.channel.send('Наш робот, товарищ')
-
-
-
 
 client.run(token)

@@ -389,8 +389,6 @@ async def on_message(message):
     await client.process_commands(message)
 
 @client.event
-#word of the day
-    # wotd reaction
     if swotd.lower() in message.content.lower():
         await wotdreact(message)
 
@@ -405,7 +403,6 @@ async def on_message(message):
         await channel.send(response)
 
 @client.event
-    # bofh regex
     if re.match(bofhpattern, sequence):
         await channel.send(random_line(os.path.join(sys.path[0], 'bofh.txt')))
 

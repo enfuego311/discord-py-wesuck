@@ -388,6 +388,8 @@ async def on_message(message):
     for keyword, response in data.items():
         if keyword.lower() in message.content.lower():
             await message.channel.send(response)
+    await bot.process_commands(message)
+
 
 @client.event
 async def on_message(message):

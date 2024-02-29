@@ -389,12 +389,12 @@ async def on_message(message):
     await client.process_commands(message)
 
 @client.event
+async def on_message(message):
     if swotd.lower() in message.content.lower():
         await wotdreact(message)
 
 @client.event
-#the classic marcus string
-# reacts to namestr if not botstr
+async def on_message(message):
     if (namestr.lower() in message.content.lower()) and (botstr.lower() not in message.content.lower()):
         await channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
     if botstr.lower() in message.content.lower():
@@ -403,15 +403,18 @@ async def on_message(message):
         await channel.send(response)
 
 @client.event
+async def on_message(message):
     if re.match(bofhpattern, sequence):
         await channel.send(random_line(os.path.join(sys.path[0], 'bofh.txt')))
 
 @client.event
+async def on_message(message):
     # other word matches with static and random line responses below
     if moviestr.lower() in message.content.lower():
         await channel.send(random_line(os.path.join(sys.path[0], 'movienight.txt')))
 
 @client.event
+async def on_message(message):
     if herzogstr.lower() in message.content.lower():
         await channel.send(random_line(os.path.join(sys.path[0], 'herzog.txt')))
 

@@ -40,15 +40,12 @@ reourl = os.getenv('REOURL')
 reourl2 = os.getenv('REOURL2')
 description = '''To seek and annoy'''
 giphy_api_key = os.getenv('GIPHY_API_KEY')
+
 client = commands.Bot(command_prefix='.', description=description, intents=intents)
 dictionary = enchant.Dict("en_US")
 
 #allowed users for repeat command
 allowed_ids = [340495492377083905, 181093076960411648]
-
-#define the function for keyword and response
-# Read data from a file delimited by word::response
-
 
 @client.event
 async def on_ready():
@@ -129,11 +126,47 @@ async def gpt_response(prompt):
     )
     return completion.choices[0].message.content
 
+
 @client.command(name="gpt", help="Ask GPT-3.5 Turbo a question or send a message")
 async def gpt(ctx, *, prompt: str):
     response = await gpt_response(prompt)
     await ctx.send(response)
 
+@client.command()
+async def movie(ctx, movie_name):
+    with open('movies.csv', 'r') as file:
+        reader = csv.reader(file)
+        found_movies = []
+        for row in reader:
+            if row[0].lower().startswith(movie_name.lower()):
+                found_movies.append(row)
+
+        if found_movies:
+            embed = discord.Embed(title='Search Results', color=discord.Color.blue())
+            for movie in found_movies:
+                embed.add_field(name='Movie Name', value=movie[0], inline=False)
+                embed.add_field(name='View Date', value=movie[1], inline=True)
+                embed.add_field(name='RT', value=movie[2], inline=True)
+                embed.add_field(name='RTA', value=movie[3], inline=True)
+                embed.add_field(name='Fumble Expectation', value=movie[4], inline=True)
+                embed.add_field(name='Fumble Execution', value=movie[5], inline=True)
+                embed.add_field(name='Fumble Entertainment', value=movie[6], inline=True)
+                embed.add_field(name='Fumble Recommendation', value=movie[7], inline=True)
+                embed.add_field(name='Hylas Expectation', value=movie[8], inline=True)
+                embed.add_field(name='Hylas Execution', value=movie[9], inline=True)
+                embed.add_field(name='Hylas Entertainment', value=movie[10], inline=True)
+                embed.add_field(name='Hylas Recommendation', value=movie[11], inline=True)
+                embed.add_field(name='Enfuego Recommendation', value=movie[12], inline=True)
+                embed.add_field(name='illusion Expectation', value=movie[13], inline=True)
+                embed.add_field(name='illusion Execution', value=movie[14], inline=True)
+                embed.add_field(name='illusion Entertainment', value=movie[15], inline=True)
+                embed.add_field(name='illusion Recommendation', value=movie[16], inline=True)
+                embed.add_field(name='guil Recommendation', value=movie[17], inline=True)
+
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send('No matching movies found.')
+            
 # clap!👏
 @client.command(
     pass_context=True,
@@ -369,38 +402,102 @@ async def repeat(ctx, channel_mention, *, message):
 
 # match various patterns including word of the day and respond with
 # either random lines or react to wotd with emoji
-
 @client.event
 async def on_message(message):
-    async def read_data_from_file(filename):
-        data = {}
-        with open(filename, 'r') as file:
-            for line in file:
-                parts = line.strip().split("::")
-                if len(parts) == 2:
-                    keyword, response = parts
-                    data[keyword.lower()] = response
-        return data
-    # Replace 'your_file.txt' with the actual filename
-    filename = 'keyword_response.txt'  # Replace with the actual filename
-    data = read_data_from_file(filename)
+    nicepattern = r".*\bnice\b\W*"
+    namestr = "marcus"
+    moviestr = "movie night"
+    herzogstr = "herzog"
+    herstr = "amanda"
+    kartstr = "kart"
+    mariostr = "mario game"
+    ff2str = "ff2"
+    typongstr = "typong"
+    ffstr = "final fantasy"
+    neatostr = "neato"
+    zeldastr = "zelda"
+    titwstr = "this is the way"
+    bofhpattern = r".*\berror\b\W*"
+    daystr = "what a day"
 
-    for keyword, response in data.items():
-        if keyword.lower() in message.content.lower():
-            await message.channel.send(response)
-    await bot.process_commands(message)
+    # this is the *real* bot username - not the nickname
+    botstr = client.user.name
+
+    # what channel is this? needed for channel.send
+    channel = message.channel
+
+    if message.author == client.user:
+        return
+    
+#    if namestr.lower() in message.content.lower():
+#        response = await gpt_response(message.content)
+#        await message.channel.send(response)
+
+    # If the message is in Russian, send "our robot, comrade" in Russian
+    lang = detect(message.content)
+    if lang == 'ru':
+        await message.channel.send('Наш робот, товарищ')
 
 
-@client.event
-async def on_message(message):
+    # reacts to namestr if not botstr
+    if (namestr.lower() in message.content.lower()) and (botstr.lower() not in message.content.lower()):
+        await channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
+    if botstr.lower() in message.content.lower():
+        line = random_line(os.path.join(sys.path[0], 'botmention.txt'))
+        response = line.replace("BOT", botstr)
+        await channel.send(response)
+    
+    # wotd reaction
     if swotd.lower() in message.content.lower():
         await wotdreact(message)
 
-@client.event
-async def on_message(message):
-    namestr="marcus"
-    if (namestr.lower() in message.content.lower()) and (botstr.lower() not in message.content.lower()):
-        await channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
-        await channel.send(response)
+    # nice reaction
+    sequence = message.content.lower()
+    if re.match(nicepattern, sequence):
+        await nicereact(message)
+
+    # bofh regex
+    if re.match(bofhpattern, sequence):
+        await channel.send(random_line(os.path.join(sys.path[0], 'bofh.txt')))
+
+    # other word matches with static and random line responses below
+    if moviestr.lower() in message.content.lower():
+        await channel.send(random_line(os.path.join(sys.path[0], 'movienight.txt')))
+
+    if herzogstr.lower() in message.content.lower():
+        await channel.send(random_line(os.path.join(sys.path[0], 'herzog.txt')))
+
+    if herstr.lower() in message.content.lower():
+        await channel.send("At least until operation: kill wife and kids")
+
+    if kartstr.lower() in message.content.lower():
+        await channel.send("**Official We Suck Mario Kart Ranking** - 8 > 64 > SNES > DD > 7 > Wii > DS > GBA")
+    
+    if mariostr.lower() in message.content.lower():
+        await channel.send("**Official We Suck Super Mario Ranking** - Odyssey > 64 > World > 3 > World 2 = Galaxy = Galaxy 2 = Fury > 3D World > 3D Land > Sunshine > 1 > 2 = Land 2 > New DS = New Wii > New U > New 2 > Land > Lost")
+    
+    if ff2str.lower() in message.content.lower():
+        await channel.send("The thing about civilization is that we are all 72 hours away from pure cannibalistic anarchy. That clock gets reset everytime we eat, everytiem we sleep but all of life as know it are on a precipice. FF2 was about 48 hrs for me. Everything you know and care about means nothing. That's the reality of culture and civilzation. It's an absolute cosmic shadow held up by essentially nothing. Final fantasy 2 taught me that.")
+    
+    if typongstr.lower() in message.content.lower():
+       await channel.send("Don't make fun of my typong")
+    
+    if ffstr.lower() in message.content.lower():
+        await channel.send("**Official We Suck Final Fantasy Ranking** - FF7R > FF6 > FF7 > FF9 > FF10 > FF15 > FF4 > FF12 > FF5 > FF10-2 > FF3 > FF1 > FF8 > MQ > FF2 > FF13")
+
+    if neatostr.lower() in message.content.lower():
+       await channel.send("neato burrito")
+
+    if zeldastr.lower() in message.content.lower():
+       await channel.send("**Official We Suck Zelda Ranking** - BotW > Minish > ALBW > ALttP > LA = WW > OoT > Oracle > MM > LoZ > TP > SS > AoL = PH > FSA > ST = TFH")
+    
+    if titwstr.lower() in message.content.lower():
+        await channel.send("This is the way.")
+    
+    if daystr.lower() in message.content.lower():
+        await channel.send("Tell me about it")
+        
+    # this keeps us from getting stuck in this function
+    await client.process_commands(message)
 
 client.run(token)

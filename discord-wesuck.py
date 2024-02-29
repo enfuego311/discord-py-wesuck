@@ -405,20 +405,4 @@ async def on_message(message):
         response = line.replace("BOT", botstr)
         await channel.send(response)
 
-@client.event
-async def on_message(message):
-    if re.match(bofhpattern, sequence):
-        await channel.send(random_line(os.path.join(sys.path[0], 'bofh.txt')))
-
-@client.event
-async def on_message(message):
-    # other word matches with static and random line responses below
-    if moviestr.lower() in message.content.lower():
-        await channel.send(random_line(os.path.join(sys.path[0], 'movienight.txt')))
-
-@client.event
-async def on_message(message):
-    if herzogstr.lower() in message.content.lower():
-        await channel.send(random_line(os.path.join(sys.path[0], 'herzog.txt')))
-
 client.run(token)

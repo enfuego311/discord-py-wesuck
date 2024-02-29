@@ -398,6 +398,7 @@ async def on_message(message):
 
 @client.event
 async def on_message(message):
+    namestr="marcus"
     if (namestr.lower() in message.content.lower()) and (botstr.lower() not in message.content.lower()):
         await channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
     if botstr.lower() in message.content.lower():

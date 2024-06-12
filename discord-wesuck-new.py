@@ -314,7 +314,7 @@ async def weather(ctx, *, search):
     help="This will query the Google Maps API to get the latitude and longitude. Using that it will query the OpenWeather API for a local forecast.",
     brief="Forecast for the location specified."
 )
-async def weather(ctx, *, search):
+async def forecast(ctx, *, search):
     async with aiohttp.ClientSession() as session:
         search = search.replace(' ', '+')
         # Get the latitude and longitude
@@ -418,7 +418,7 @@ async def on_message(message):
             break
         # this keeps us from getting stuck in this function
     await client.process_commands(message)
-    
+
     if namestr.lower() in message.content.lower():
         await message.channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
     await client.process_commands(message)

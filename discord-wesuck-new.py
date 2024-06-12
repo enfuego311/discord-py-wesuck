@@ -163,7 +163,7 @@ async def sbclap(ctx, *, sbclaptext):
 async def inspire(ctx):
     response = requests.get('https://inspirobot.me/api?generate=true')
     meme.url = response.text
-    await ctx.send(f"{meme.url}"
+    await ctx.send(f"{meme.url}")
 
 # get today's word
 @client.command(

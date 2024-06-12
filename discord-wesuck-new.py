@@ -410,5 +410,7 @@ async def on_message(message):
         if keyword in message.content.lower():
             await message.channel.send(response)
             break
+        # this keeps us from getting stuck in this function
+    await client.process_commands(message)
 
 client.run(token)

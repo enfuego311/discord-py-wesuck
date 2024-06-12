@@ -30,7 +30,7 @@ googleapi = os.getenv('GOOGLE_API_KEY')
 reourl = os.getenv('REOURL')
 reourl2 = os.getenv('REOURL2')
 giphy_api_key = os.getenv('GIPHY_API_KEY')
-client = commands.Bot(command_prefix='.', description=description, intents=intents)
+client = commands.Bot(command_prefix='.', description="description", intents=intents)
 dictionary = enchant.Dict("en_US")
 
 #allowed users for repeat command

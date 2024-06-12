@@ -393,7 +393,6 @@ async def repeat(ctx, channel_mention, *, message):
 @client.event
 async def on_message(message):
     nicepattern = r".*\bnice\b\W*"
-    namestr = "marcus"
     moviestr = "movie night"
     herzogstr = "herzog"
     herstr = "amanda"

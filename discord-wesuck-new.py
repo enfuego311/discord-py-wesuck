@@ -30,6 +30,11 @@ reourl2 = os.getenv('REOURL2')
 giphy_api_key = os.getenv('GIPHY_API_KEY')
 client = commands.Bot(command_prefix='.', description="description", intents=intents)
 dictionary = enchant.Dict("en_US")
+namestr = "marcus"
+nicepattern = "nice"
+bofhpattern = "error"
+botstr = client.user.name
+
 
 #allowed users for repeat command
 allowed_ids = [340495492377083905, 181093076960411648]
@@ -404,9 +409,30 @@ async def repeat(ctx, channel_mention, *, message):
     await channel.send(message)
 
 @client.event
+
 async def on_message(message):
     if message.author == client.user:
         return
+    if (namestr.lower() in message.content.lower()) and (botstr.lower() not in message.content.lower()):
+        await message.channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
+    if botstr.lower() in message.content.lower():
+        line = random_line(os.path.join(sys.path[0], 'botmention.txt'))
+        response = line.replace("BOT", botstr)
+        await message.channel.send(response)
+    
+    # wotd reaction
+    if swotd.lower() in message.content.lower():
+        await wotdreact(message)
+
+    # nice reaction
+    sequence = message.content.lower()
+    if re.match(nicepattern, sequence):
+        await nicereact(message)
+
+    # bofh regex
+    if re.match(bofhpattern, sequence):
+        await message.channel.send(random_line(os.path.join(sys.path[0], 'bofh.txt')))
+
     # Check if the message contains any of the keywords
     for keyword, response in responses.items():
         if keyword in message.content.lower():

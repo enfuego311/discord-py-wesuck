@@ -161,10 +161,9 @@ async def sbclap(ctx, *, sbclaptext):
     brief="Inpsire me."
 )
 async def inspire(ctx):
-    embed = discord.Embed(colour=discord.Colour.blue())
-    response = await cs_page('https://inspirobot.me/api?generate=true')
-    embed.set_image(url=response)
-    await ctx.send(embed=embed)
+    response = requests.get('https://inspirobot.me/api?generate=true')
+    meme.url = response.text
+    await ctx.send(f"{meme.url}"
 
 # get today's word
 @client.command(

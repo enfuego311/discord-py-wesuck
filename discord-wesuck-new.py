@@ -329,8 +329,11 @@ async def weather(ctx, *, search):
 
         # Extract 3-day forecast data
         forecast = {}
+        today = datetime.datetime.utcnow().date()
         for entry in forecastdata['list']:
             date = entry['dt_txt'].split(' ')[0]
+            if date is today:
+                continue
             if date not in forecast:
                 forecast[date] = {
                     'temp': [],

@@ -403,6 +403,8 @@ async def repeat(ctx, channel_mention, *, message):
 
 @client.event
 async def on_message(message):
+    if message.author == client.user:
+        return
     # Check if the message contains any of the keywords
     for keyword, response in responses.items():
         if keyword in message.content.lower():

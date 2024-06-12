@@ -418,17 +418,14 @@ async def on_message(message):
             await message.channel.send(response)
             break
         # this keeps us from getting stuck in this function
-    await client.process_commands(message)
 
     if namestr.lower() in message.content.lower():
         await message.channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
-    await client.process_commands(message)
 
     if client.user.lower() in message.content.lower():
         line = random_line(os.path.join(sys.path[0], 'botmention.txt'))
         response = line.replace("BOT", client.user)
         await message.channel.send(response)
-    await client.process_commands(message)
 
     
     # wotd reaction

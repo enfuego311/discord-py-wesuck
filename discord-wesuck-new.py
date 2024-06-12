@@ -414,24 +414,32 @@ async def on_message(message):
         return
     if namestr.lower() in message.content.lower():
         await message.channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
+    await client.process_commands(message)
+
     if client.user.lower() in message.content.lower():
         line = random_line(os.path.join(sys.path[0], 'botmention.txt'))
         response = line.replace("BOT", client.user)
         await message.channel.send(response)
+    await client.process_commands(message)
+
     
     # wotd reaction
     if swotd.lower() in message.content.lower():
         await wotdreact(message)
+    await client.process_commands(message)
+
 
     # nice reaction
     sequence = message.content.lower()
     if re.match(nicepattern, sequence):
         await nicereact(message)
+    await client.process_commands(message)
+
 
     # bofh regex
     if re.match(bofhpattern, sequence):
         await message.channel.send(random_line(os.path.join(sys.path[0], 'bofh.txt')))
-
+    await client.process_commands(message)
     # Check if the message contains any of the keywords
     for keyword, response in responses.items():
         if keyword in message.content.lower():

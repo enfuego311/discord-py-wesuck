@@ -374,6 +374,7 @@ async def forecast(ctx, *, search):
             )
 
         await ctx.send(embed=embed)
+        
 
 @client.command(name="wtf")
 async def wtf_command(ctx, member: discord.Member):
@@ -433,14 +434,12 @@ async def on_message(message):
     # wotd reaction
     if swotd.lower() in message.content.lower():
         await wotdreact(message)
-    await client.process_commands(message)
 
 
     # nice reaction
     sequence = message.content.lower()
     if re.match(nicepattern, sequence):
         await nicereact(message)
-    await client.process_commands(message)
 
 
     # bofh regex

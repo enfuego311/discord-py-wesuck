@@ -33,7 +33,7 @@ dictionary = enchant.Dict("en_US")
 namestr = "marcus"
 nicepattern = "nice"
 bofhpattern = "error"
-botstr = client.user.name
+botstr = client.user
 
 
 #allowed users for repeat command

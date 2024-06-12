@@ -44,6 +44,19 @@ async def on_ready():
     print(client.user.id)
     print('------')
 
+# Function to load responses from a text file
+def load_responses(file_path):
+    responses = {}
+    with open(file_path, 'r') as file:
+        for line in file:
+            if '::' in line:
+                keyword, response = line.strip().split('::', 1)
+                responses[keyword.strip()] = response.strip()
+    return responses
+
+# Load responses from the text file
+responses = load_responses('keyword_response.txt')
+
 # random line function for word matching
 def random_line(fname):
     lines = open(fname).read().splitlines()
@@ -388,94 +401,12 @@ async def repeat(ctx, channel_mention, *, message):
     channel = client.get_channel(int(channel_id))
     await channel.send(message)
 
-# match various patterns including word of the day and respond with
-# either random lines or react to wotd with emoji
 @client.event
 async def on_message(message):
-    nicepattern = r".*\bnice\b\W*"
-    namestr = "marcus"
-    moviestr = "movie night"
-    herzogstr = "herzog"
-    herstr = "amanda"
-    kartstr = "kart"
-    mariostr = "mario game"
-    ff2str = "ff2"
-    typongstr = "typong"
-    ffstr = "final fantasy"
-    neatostr = "neato"
-    zeldastr = "zelda"
-    titwstr = "this is the way"
-    bofhpattern = r".*\berror\b\W*"
-    daystr = "what a day"
-
-    # this is the *real* bot username - not the nickname
-    botstr = client.user.name
-
-    # what channel is this? needed for channel.send
-    channel = message.channel
-
-    if message.author == client.user:
-        return
-
-    # reacts to namestr if not botstr
-    if (namestr.lower() in message.content.lower()) and (botstr.lower() not in message.content.lower()):
-        await channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
-    if botstr.lower() in message.content.lower():
-        line = random_line(os.path.join(sys.path[0], 'botmention.txt'))
-        response = line.replace("BOT", botstr)
-        await channel.send(response)
-    
-    # wotd reaction
-    if swotd.lower() in message.content.lower():
-        await wotdreact(message)
-
-    # nice reaction
-    sequence = message.content.lower()
-    if re.match(nicepattern, sequence):
-        await nicereact(message)
-
-    # bofh regex
-    if re.match(bofhpattern, sequence):
-        await channel.send(random_line(os.path.join(sys.path[0], 'bofh.txt')))
-
-    # other word matches with static and random line responses below
-    if moviestr.lower() in message.content.lower():
-        await channel.send(random_line(os.path.join(sys.path[0], 'movienight.txt')))
-
-    if herzogstr.lower() in message.content.lower():
-        await channel.send(random_line(os.path.join(sys.path[0], 'herzog.txt')))
-
-    if herstr.lower() in message.content.lower():
-        await channel.send("At least until operation: kill wife and kids")
-
-    if kartstr.lower() in message.content.lower():
-        await channel.send("**Official We Suck Mario Kart Ranking** - 8 > 64 > SNES > DD > 7 > Wii > DS > GBA")
-    
-    if mariostr.lower() in message.content.lower():
-        await channel.send("**Official We Suck Super Mario Ranking** - Odyssey > 64 > World > 3 > World 2 = Galaxy = Galaxy 2 = Fury > 3D World > 3D Land > Sunshine > 1 > 2 = Land 2 > New DS = New Wii > New U > New 2 > Land > Lost")
-    
-    if ff2str.lower() in message.content.lower():
-        await channel.send("The thing about civilization is that we are all 72 hours away from pure cannibalistic anarchy. That clock gets reset everytime we eat, everytiem we sleep but all of life as know it are on a precipice. FF2 was about 48 hrs for me. Everything you know and care about means nothing. That's the reality of culture and civilzation. It's an absolute cosmic shadow held up by essentially nothing. Final fantasy 2 taught me that.")
-    
-    if typongstr.lower() in message.content.lower():
-       await channel.send("Don't make fun of my typong")
-    
-    if ffstr.lower() in message.content.lower():
-        await channel.send("**Official We Suck Final Fantasy Ranking** - FF7R > FF6 > FF7 > FF9 > FF10 > FF15 > FF4 > FF12 > FF5 > FF10-2 > FF3 > FF1 > FF8 > MQ > FF2 > FF13")
-
-    if neatostr.lower() in message.content.lower():
-       await channel.send("neato burrito")
-
-    if zeldastr.lower() in message.content.lower():
-       await channel.send("**Official We Suck Zelda Ranking** - BotW > Minish > ALBW > ALttP > LA = WW > OoT > Oracle > MM > LoZ > TP > SS > AoL = PH > FSA > ST = TFH")
-    
-    if titwstr.lower() in message.content.lower():
-        await channel.send("This is the way.")
-    
-    if daystr.lower() in message.content.lower():
-        await channel.send("Tell me about it")
-        
-    # this keeps us from getting stuck in this function
-    await client.process_commands(message)
+    # Check if the message contains any of the keywords
+    for keyword, response in responses.items():
+        if keyword in message.content.lower():
+            await message.channel.send(response)
+            break
 
 client.run(token)

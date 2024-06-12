@@ -1,44 +1,55 @@
+import os
+import csv
+import sys
+import discord
+intents = discord.Intents.all()
+intents.typing = False
+intents.presences = False
+import enchant
+import re
+import ssl
+from OpenSSL import crypto
+import requests
+import socket
 from io import BytesIO
+import json
 import aiohttp
 import asyncio
-import csv
+import subprocess
+from langdetect import detect
+from discord.ext import commands
+import random
 import datetime
 from datetime import datetime
 from datetime import date
 from datetime import time
 from datetime import timedelta
-import enchant
-import json
-import os
-import random
-import re
-import requests
-import socket
-import subprocess
-import sys
-from discord.ext import commands
-import discord
-intents = discord.Intents.all()
-intents.typing = False
-intents.presences = False
+from aiocfscrape import CloudflareScraper
+import openai
+
+# start an instance of the completion engine
+# completion_engine = openai.Completion()
 
 # discord and API tokens need to be environment variables named as below
+openai.api_key = os.getenv('OPENAI_API_KEY')
 token = os.getenv('DISCORD_TOKEN')
+tenorapi = os.getenv('TENOR_API_KEY')
 weatherapi = os.getenv('WEATHER_API_KEY')
 googleapi = os.getenv('GOOGLE_API_KEY')
 reourl = os.getenv('REOURL')
 reourl2 = os.getenv('REOURL2')
+description = '''To seek and annoy'''
 giphy_api_key = os.getenv('GIPHY_API_KEY')
-client = commands.Bot(command_prefix='.', description="description", intents=intents)
+
+client = commands.Bot(command_prefix='.', description=description, intents=intents)
 dictionary = enchant.Dict("en_US")
 
 #allowed users for repeat command
 allowed_ids = [340495492377083905, 181093076960411648]
 
-#set activity, print successful logs
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Game(name="MY LITTLE PONY:A Maretime Bay Adventure"))
+    await client.change_presence(activity=discord.Game(name="Raccoon"))
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
@@ -48,6 +59,8 @@ async def on_ready():
 def random_line(fname):
     lines = open(fname).read().splitlines()
     return random.choice(lines)
+
+
 
 # check if seed is set
 # if not that means word of the day (wotd) isn't set so run the exception code
@@ -104,6 +117,56 @@ async def is_time_between(begin_time, end_time, check_time=None):
     else: # crosses midnight
         return check_time >= begin_time or check_time <= end_time
 
+async def gpt_response(prompt):
+    completion = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "user", "content": prompt}
+        ]
+    )
+    return completion.choices[0].message.content
+
+
+@client.command(name="gpt", help="Ask GPT-3.5 Turbo a question or send a message")
+async def gpt(ctx, *, prompt: str):
+    response = await gpt_response(prompt)
+    await ctx.send(response)
+
+@client.command()
+async def movie(ctx, movie_name):
+    with open('movies.csv', 'r') as file:
+        reader = csv.reader(file)
+        found_movies = []
+        for row in reader:
+            if row[0].lower().startswith(movie_name.lower()):
+                found_movies.append(row)
+
+        if found_movies:
+            embed = discord.Embed(title='Search Results', color=discord.Color.blue())
+            for movie in found_movies:
+                embed.add_field(name='Movie Name', value=movie[0], inline=False)
+                embed.add_field(name='View Date', value=movie[1], inline=True)
+                embed.add_field(name='RT', value=movie[2], inline=True)
+                embed.add_field(name='RTA', value=movie[3], inline=True)
+                embed.add_field(name='Fumble Expectation', value=movie[4], inline=True)
+                embed.add_field(name='Fumble Execution', value=movie[5], inline=True)
+                embed.add_field(name='Fumble Entertainment', value=movie[6], inline=True)
+                embed.add_field(name='Fumble Recommendation', value=movie[7], inline=True)
+                embed.add_field(name='Hylas Expectation', value=movie[8], inline=True)
+                embed.add_field(name='Hylas Execution', value=movie[9], inline=True)
+                embed.add_field(name='Hylas Entertainment', value=movie[10], inline=True)
+                embed.add_field(name='Hylas Recommendation', value=movie[11], inline=True)
+                embed.add_field(name='Enfuego Recommendation', value=movie[12], inline=True)
+                embed.add_field(name='illusion Expectation', value=movie[13], inline=True)
+                embed.add_field(name='illusion Execution', value=movie[14], inline=True)
+                embed.add_field(name='illusion Entertainment', value=movie[15], inline=True)
+                embed.add_field(name='illusion Recommendation', value=movie[16], inline=True)
+                embed.add_field(name='guil Recommendation', value=movie[17], inline=True)
+
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send('No matching movies found.')
+            
 # clap!👏
 @client.command(
     pass_context=True,
@@ -160,9 +223,10 @@ async def sbclap(ctx, *, sbclaptext):
     brief="Inpsire me."
 )
 async def inspire(ctx):
-    response = requests.get('https://inspirobot.me/api?generate=true')
-    meme_url = response.text
-    await ctx.send(f"{meme_url}")
+    embed = discord.Embed(colour=discord.Colour.blue())
+    response = await cs_page('https://inspirobot.me/api?generate=true')
+    embed.set_image(url=response)
+    await ctx.send(embed=embed)
 
 # get today's word
 @client.command(
@@ -185,7 +249,7 @@ async def wotd(ctx):
 async def ywotd(ctx):
     await ctx.send("Yesterday's word of the day was: **" + sywotd + "**")
 
-@client.command(name='driveway')
+@client.command()
 async def driveway(ctx):
 
     # Download the image data using requests
@@ -203,7 +267,7 @@ async def driveway(ctx):
     # Send the message with the embedded file
     await ctx.send(file=discord.File(file), embed=embed)
 
-@client.command(name='backyard')
+@client.command()
 async def backyard(ctx):
 
     # Download the image data using requests
@@ -254,7 +318,6 @@ async def ping_host(ctx, host):
         await ctx.send(f'Error: {e}')
 
 @client.command(
-    name="weather",
     pass_context=True,
     help="This will query the google maps api to get the latitude and longitude. Using that it will query the OpenWeather API for local conditions.",
     brief="Weather for the location specified."
@@ -292,70 +355,6 @@ async def weather(ctx, *, search):
     await session2.close()
     await ctx.send(embed=embed)
 
-@client.command(
-    name="forecast",
-    pass_context=True,
-    help="This will query the Google Maps API to get the latitude and longitude. Using that it will query the OpenWeather API for a local forecast.",
-    brief="Forecast for the location specified."
-)
-async def weather(ctx, *, search):
-    async with aiohttp.ClientSession() as session:
-        search = search.replace(' ', '+')
-        # Get the latitude and longitude
-        georesp = await session.get('https://maps.googleapis.com/maps/api/geocode/json?key=' + googleapi + '&address=' + search, ssl=False)
-        geodata = json.loads(await georesp.text())
-        geolat = str(geodata['results'][0]['geometry']['location']['lat'])
-        geolon = str(geodata['results'][0]['geometry']['location']['lng'])
-        
-        # Get the 3-day weather forecast
-        forecastresp = await session.get(f'http://api.openweathermap.org/data/2.5/forecast?appid={weatherapi}&lat={geolat}&lon={geolon}&units=imperial')
-        forecastdata = json.loads(await forecastresp.text())
-
-        # Create the map URL for the embed
-        locmapurl = f'https://maps.googleapis.com/maps/api/staticmap?center={geolat},{geolon}&zoom=11&size=600x300&key={googleapi}'
-
-        # Extract 3-day forecast data
-        forecast = {}
-        for entry in forecastdata['list']:
-            date = entry['dt_txt'].split(' ')[0]
-            if date not in forecast:
-                forecast[date] = {
-                    'temp': [],
-                    'feels_like': [],
-                    'conditions': [],
-                    'humidity': [],
-                    'wind_speed': []
-                }
-            forecast[date]['temp'].append(entry['main']['temp'])
-            forecast[date]['feels_like'].append(entry['main']['feels_like'])
-            forecast[date]['conditions'].append(entry['weather'][0]['description'])
-            forecast[date]['humidity'].append(entry['main']['humidity'])
-            forecast[date]['wind_speed'].append(entry['wind']['speed'])
-            if len(forecast) == 3:
-                break
-
-        # Prepare the embed message
-        embed = discord.Embed(title=f"3-Day Weather Forecast for {geodata['results'][0]['formatted_address']}", colour=discord.Colour.blue())
-        embed.set_image(url=locmapurl)
-
-        for date, data in forecast.items():
-            hi_temp = max(data['temp'])
-            lo_temp = min(data['temp'])
-            most_common_cond = max(set(data['conditions']), key=data['conditions'].count)
-            avg_humidity = sum(data['humidity']) / len(data['humidity'])
-            avg_wind_speed = sum(data['wind_speed']) / len(data['wind_speed'])
-
-            embed.add_field(
-                name=date,
-                value=f"High: {hi_temp:.1f}F, Low: {lo_temp:.1f}F\n"
-                      f"Conditions: {most_common_cond}\n"
-                      f"Humidity: {avg_humidity:.1f}%\n"
-                      f"Wind Speed: {avg_wind_speed:.1f} mph",
-                inline=False
-            )
-
-        await ctx.send(embed=embed)
-
 @client.command(name="wtf")
 async def wtf_command(ctx, member: discord.Member):
     # get the previous message in the channel from the specified member
@@ -373,12 +372,25 @@ async def wtf_command(ctx, member: discord.Member):
                 await ctx.send(corrected_msg)
             return
 
-@client.command(name="ip")
+@client.command()
 async def ip(ctx):
     ip = requests.get('https://api.ipify.org').text
     await ctx.send(f"My public IP: {ip}")
 
-@client.command(name="repeat")
+@client.command()
+async def sslexpiry(ctx, url: str):
+    try:
+        cert = ssl.get_server_certificate((url, 443))
+        x509 = crypto.load_certificate(crypto.FILETYPE_PEM, cert)
+        not_after = x509.get_notAfter().decode('ascii')
+        expiry_date = datetime.strptime(not_after, '%Y%m%d%H%M%SZ')
+        await ctx.send(f'The SSL certificate for {url} will expire on {expiry_date}.')
+    except ssl.SSLError:
+        await ctx.send(f'Error: Unable to retrieve SSL certificate for {url}.')
+    except socket.gaierror:
+        await ctx.send(f'Error: Unable to connect to {url}. Please check the URL and try again.')
+
+@client.command()
 async def repeat(ctx, channel_mention, *, message):
     if ctx.author.id not in allowed_ids:
         await ctx.send("You are not allowed to use this command.")
@@ -416,6 +428,16 @@ async def on_message(message):
 
     if message.author == client.user:
         return
+    
+#    if namestr.lower() in message.content.lower():
+#        response = await gpt_response(message.content)
+#        await message.channel.send(response)
+
+    # If the message is in Russian, send "our robot, comrade" in Russian
+    lang = detect(message.content)
+    if lang == 'ru':
+        await message.channel.send('Наш робот, товарищ')
+
 
     # reacts to namestr if not botstr
     if (namestr.lower() in message.content.lower()) and (botstr.lower() not in message.content.lower()):

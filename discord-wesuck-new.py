@@ -3,7 +3,6 @@ import aiohttp
 import asyncio
 import csv
 import datetime
-from datetime import datetime
 from datetime import date
 from datetime import time
 from datetime import timedelta

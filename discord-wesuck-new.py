@@ -201,7 +201,11 @@ async def wotd(ctx):
 async def ywotd(ctx):
     await ctx.send("Yesterday's word of the day was: **" + sywotd + "**")
 
-@client.command(name='driveway')
+@client.command(
+    name='driveway',
+    help='This is a live pic of a driveway. Somewhere.',
+    brief='A driveway'
+)
 async def driveway(ctx):
 
     # Download the image data using requests
@@ -219,7 +223,11 @@ async def driveway(ctx):
     # Send the message with the embedded file
     await ctx.send(file=discord.File(file), embed=embed)
 
-@client.command(name='backyard')
+@client.command(
+    name='backyard',
+    help='This is a live pic of a back yard. Somewhere.',
+    brief='A back yard'
+)
 async def backyard(ctx):
 
     # Download the image data using requests
@@ -237,7 +245,11 @@ async def backyard(ctx):
     # Send the message with the embedded file
     await ctx.send(file=discord.File(file), embed=embed)
 
-@client.command(name='sgif')
+@client.command(
+    name='sgif',
+    help='Gets the top result from giphy',
+    brief='Giphy top result'
+)
 async def search_gif(ctx, *args):
     # Parse the user's input to extract the search query
     search_query = ' '.join(args)
@@ -251,7 +263,11 @@ async def search_gif(ctx, *args):
     embed.set_image(url=gif_url)
     await ctx.send(embed=embed)
 
-@client.command(name='ping')
+@client.command(
+    name='ping',
+    help='Check latency from bot to the host provided.',
+    brief='Ping IP'
+)
 async def ping_host(ctx, host):
     try:
         # Run the ping command and capture the output
@@ -376,7 +392,11 @@ async def forecast(ctx, *, search):
         await ctx.send(embed=embed)
         
 
-@client.command(name="wtf")
+@client.command(
+    name="wtf",
+    help="Spellcheck the last thing the specified user said.",
+    brief="WTF?!"
+)
 async def wtf_command(ctx, member: discord.Member):
     # get the previous message in the channel from the specified member
     async for msg in ctx.channel.history(limit=2):

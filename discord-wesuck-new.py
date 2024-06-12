@@ -24,7 +24,6 @@ intents.presences = False
 
 # discord and API tokens need to be environment variables named as below
 token = os.getenv('DISCORD_TOKEN')
-tenorapi = os.getenv('TENOR_API_KEY')
 weatherapi = os.getenv('WEATHER_API_KEY')
 googleapi = os.getenv('GOOGLE_API_KEY')
 reourl = os.getenv('REOURL')
@@ -255,6 +254,7 @@ async def ping_host(ctx, host):
         await ctx.send(f'Error: {e}')
 
 @client.command(
+    name="weather",
     pass_context=True,
     help="This will query the google maps api to get the latitude and longitude. Using that it will query the OpenWeather API for local conditions.",
     brief="Weather for the location specified."
@@ -291,6 +291,70 @@ async def weather(ctx, *, search):
     await session.close()
     await session2.close()
     await ctx.send(embed=embed)
+
+@client.command(
+    name="forecast",
+    pass_context=True,
+    help="This will query the Google Maps API to get the latitude and longitude. Using that it will query the OpenWeather API for a local forecast.",
+    brief="Forecast for the location specified."
+)
+async def weather(ctx, *, search):
+    async with aiohttp.ClientSession() as session:
+        search = search.replace(' ', '+')
+        # Get the latitude and longitude
+        georesp = await session.get('https://maps.googleapis.com/maps/api/geocode/json?key=' + googleapi + '&address=' + search, ssl=False)
+        geodata = json.loads(await georesp.text())
+        geolat = str(geodata['results'][0]['geometry']['location']['lat'])
+        geolon = str(geodata['results'][0]['geometry']['location']['lng'])
+        
+        # Get the 3-day weather forecast
+        forecastresp = await session.get(f'http://api.openweathermap.org/data/2.5/forecast?appid={weatherapi}&lat={geolat}&lon={geolon}&units=imperial')
+        forecastdata = json.loads(await forecastresp.text())
+
+        # Create the map URL for the embed
+        locmapurl = f'https://maps.googleapis.com/maps/api/staticmap?center={geolat},{geolon}&zoom=11&size=600x300&key={googleapi}'
+
+        # Extract 3-day forecast data
+        forecast = {}
+        for entry in forecastdata['list']:
+            date = entry['dt_txt'].split(' ')[0]
+            if date not in forecast:
+                forecast[date] = {
+                    'temp': [],
+                    'feels_like': [],
+                    'conditions': [],
+                    'humidity': [],
+                    'wind_speed': []
+                }
+            forecast[date]['temp'].append(entry['main']['temp'])
+            forecast[date]['feels_like'].append(entry['main']['feels_like'])
+            forecast[date]['conditions'].append(entry['weather'][0]['description'])
+            forecast[date]['humidity'].append(entry['main']['humidity'])
+            forecast[date]['wind_speed'].append(entry['wind']['speed'])
+            if len(forecast) == 3:
+                break
+
+        # Prepare the embed message
+        embed = discord.Embed(title=f"3-Day Weather Forecast for {geodata['results'][0]['formatted_address']}", colour=discord.Colour.blue())
+        embed.set_image(url=locmapurl)
+
+        for date, data in forecast.items():
+            hi_temp = max(data['temp'])
+            lo_temp = min(data['temp'])
+            most_common_cond = max(set(data['conditions']), key=data['conditions'].count)
+            avg_humidity = sum(data['humidity']) / len(data['humidity'])
+            avg_wind_speed = sum(data['wind_speed']) / len(data['wind_speed'])
+
+            embed.add_field(
+                name=date,
+                value=f"High: {hi_temp:.1f}F, Low: {lo_temp:.1f}F\n"
+                      f"Conditions: {most_common_cond}\n"
+                      f"Humidity: {avg_humidity:.1f}%\n"
+                      f"Wind Speed: {avg_wind_speed:.1f} mph",
+                inline=False
+            )
+
+        await ctx.send(embed=embed)
 
 @client.command(name="wtf")
 async def wtf_command(ctx, member: discord.Member):

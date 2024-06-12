@@ -33,7 +33,6 @@ dictionary = enchant.Dict("en_US")
 namestr = "marcus"
 nicepattern = "nice"
 bofhpattern = "error"
-botstr = client.user
 
 
 #allowed users for repeat command
@@ -413,11 +412,11 @@ async def repeat(ctx, channel_mention, *, message):
 async def on_message(message):
     if message.author == client.user:
         return
-    if (namestr.lower() in message.content.lower()) and (botstr.lower() not in message.content.lower()):
+    if namestr.lower() in message.content.lower():
         await message.channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
-    if botstr.lower() in message.content.lower():
+    if client.user.lower() in message.content.lower():
         line = random_line(os.path.join(sys.path[0], 'botmention.txt'))
-        response = line.replace("BOT", botstr)
+        response = line.replace("BOT", client.user)
         await message.channel.send(response)
     
     # wotd reaction

@@ -408,10 +408,17 @@ async def repeat(ctx, channel_mention, *, message):
     await channel.send(message)
 
 @client.event
-
 async def on_message(message):
     if message.author == client.user:
         return
+        # Check if the message contains any of the keywords
+    for keyword, response in responses.items():
+        if keyword in message.content.lower():
+            await message.channel.send(response)
+            break
+        # this keeps us from getting stuck in this function
+    await client.process_commands(message)
+    
     if namestr.lower() in message.content.lower():
         await message.channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
     await client.process_commands(message)
@@ -439,13 +446,6 @@ async def on_message(message):
     # bofh regex
     if re.match(bofhpattern, sequence):
         await message.channel.send(random_line(os.path.join(sys.path[0], 'bofh.txt')))
-    await client.process_commands(message)
-    # Check if the message contains any of the keywords
-    for keyword, response in responses.items():
-        if keyword in message.content.lower():
-            await message.channel.send(response)
-            break
-        # this keeps us from getting stuck in this function
     await client.process_commands(message)
 
 client.run(token)

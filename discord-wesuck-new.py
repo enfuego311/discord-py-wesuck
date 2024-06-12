@@ -421,12 +421,6 @@ async def on_message(message):
 
     if namestr.lower() in message.content.lower():
         await message.channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
-
-    if client.user.lower() in message.content.lower():
-        line = random_line(os.path.join(sys.path[0], 'botmention.txt'))
-        response = line.replace("BOT", client.user)
-        await message.channel.send(response)
-
     
     # wotd reaction
     if swotd.lower() in message.content.lower():

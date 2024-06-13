@@ -437,7 +437,7 @@ async def on_message(message):
     if botstr.lower() in message.content.lower():
         line = random_line(os.path.join(sys.path[0], 'name.txt'))
         response = line.replace("BOT", botstr)
-        await channel.send(response)
+        await message.channel.send(response)
         return
 
     for keyword, response in responses.items():

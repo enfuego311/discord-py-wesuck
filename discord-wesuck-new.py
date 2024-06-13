@@ -435,7 +435,9 @@ async def on_message(message):
         return
         # Check if the message contains any of the keywords
     if botstr.lower() in message.content.lower():
-        await message.channel.send(random_line(os.path.join(sys.path[0], 'botmention.txt')))
+        line = random_line(os.path.join(sys.path[0], 'name.txt'))
+        response = line.replace("BOT", botstr)
+        await channel.send(response)
         return
 
     for keyword, response in responses.items():
@@ -445,9 +447,7 @@ async def on_message(message):
         # this keeps us from getting stuck in this function
 
     if namestr.lower() in message.content.lower():
-        line = random_line(os.path.join(sys.path[0], 'name.txt'))
-        response = line.replace("BOT", botstr)
-        await channel.send(response)
+        await message.channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
     
     # wotd reaction
     if swotd.lower() in message.content.lower():

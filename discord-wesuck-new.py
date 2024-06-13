@@ -31,6 +31,7 @@ giphy_api_key = os.getenv('GIPHY_API_KEY')
 client = commands.Bot(command_prefix='.', description="description", intents=intents)
 dictionary = enchant.Dict("en_US")
 namestr = "marcus"
+botstr = "marcusbot"
 nicepattern = "nice"
 bofhpattern = "error"
 
@@ -433,6 +434,10 @@ async def on_message(message):
     if message.author == client.user:
         return
         # Check if the message contains any of the keywords
+    if botstr.lower() in message.content.lower():
+        await message.channel.send(random_line(os.path.join(sys.path[0], 'botmention.txt')))
+        return
+
     for keyword, response in responses.items():
         if keyword in message.content.lower():
             await message.channel.send(response)
@@ -451,11 +456,5 @@ async def on_message(message):
     sequence = message.content.lower()
     if re.match(nicepattern, sequence):
         await nicereact(message)
-
-
-    # bofh regex
-    if re.match(bofhpattern, sequence):
-        await message.channel.send(random_line(os.path.join(sys.path[0], 'bofh.txt')))
-    await client.process_commands(message)
 
 client.run(token)

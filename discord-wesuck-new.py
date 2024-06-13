@@ -31,7 +31,7 @@ giphy_api_key = os.getenv('GIPHY_API_KEY')
 client = commands.Bot(command_prefix='.', description="description", intents=intents)
 dictionary = enchant.Dict("en_US")
 namestr = "marcus"
-botstr = "marcusbot"
+botstr = "MarcusBot"
 nicepattern = "nice"
 bofhpattern = "error"
 
@@ -445,7 +445,9 @@ async def on_message(message):
         # this keeps us from getting stuck in this function
 
     if namestr.lower() in message.content.lower():
-        await message.channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
+        line = random_line(os.path.join(sys.path[0], 'name.txt'))
+        response = line.replace("BOT", botstr)
+        await channel.send(response)
     
     # wotd reaction
     if swotd.lower() in message.content.lower():

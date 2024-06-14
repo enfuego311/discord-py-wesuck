@@ -391,6 +391,7 @@ async def forecast(ctx, *, search):
             )
 
         await ctx.send(embed=embed)
+        return
         
 
 @client.command(
@@ -418,6 +419,7 @@ async def wtf_command(ctx, member: discord.Member):
 async def ip(ctx):
     ip = requests.get('https://api.ipify.org').text
     await ctx.send(f"My public IP: {ip}")
+    return
 
 @client.command(name="repeat")
 async def repeat(ctx, channel_mention, *, message):
@@ -428,12 +430,13 @@ async def repeat(ctx, channel_mention, *, message):
     channel_id = re.findall(r'\d+', channel_mention)[0]
     channel = client.get_channel(int(channel_id))
     await channel.send(message)
+    return
 
 @client.event
 async def on_message(message):
     if message.author == client.user:
         return
-        # Check if the message contains any of the keywords
+
     if botstr.lower() in message.content.lower():
         line = random_line(os.path.join(sys.path[0], 'botmention.txt'))
         response = line.replace("BOT", botstr)
@@ -443,15 +446,16 @@ async def on_message(message):
     for keyword, response in responses.items():
         if keyword in message.content.lower():
             await message.channel.send(response)
-            break
-        # this keeps us from getting stuck in this function
+            return
 
     if namestr.lower() in message.content.lower():
         await message.channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
+        return
     
     # wotd reaction
     if swotd.lower() in message.content.lower():
         await wotdreact(message)
+        return
 
 
     # nice reaction

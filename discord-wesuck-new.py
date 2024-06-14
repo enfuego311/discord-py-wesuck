@@ -350,9 +350,12 @@ async def forecast(ctx, *, search):
         # Extract 3-day forecast data
         forecast = {}
         today = datetime.datetime.utcnow().date()
+        tomorrow = today + datetime.timedelta(days=1)
+        valid_dates = {str(today), str(tomorrow)}
+
         for entry in forecastdata['list']:
             date = entry['dt_txt'].split(' ')[0]
-            if date is today:
+            if date not in valid_dates:
                 continue
             if date not in forecast:
                 forecast[date] = {
@@ -367,11 +370,9 @@ async def forecast(ctx, *, search):
             forecast[date]['conditions'].append(entry['weather'][0]['description'])
             forecast[date]['humidity'].append(entry['main']['humidity'])
             forecast[date]['wind_speed'].append(entry['wind']['speed'])
-            if len(forecast) == 3:
-                break
 
         # Prepare the embed message
-        embed = discord.Embed(title=f"3-Day Weather Forecast for {geodata['results'][0]['formatted_address']}", colour=discord.Colour.blue())
+        embed = discord.Embed(title=f"Weather Forecast for {geodata['results'][0]['formatted_address']}", colour=discord.Colour.blue())
         embed.set_image(url=locmapurl)
 
         for date, data in forecast.items():
@@ -384,10 +385,10 @@ async def forecast(ctx, *, search):
             embed.add_field(
                 name=date,
                 value=f"High: {hi_temp:.1f}F, Low: {lo_temp:.1f}F\n"
-                      f"Conditions: {most_common_cond}\n"
-                      f"Humidity: {avg_humidity:.1f}%\n"
-                      f"Wind Speed: {avg_wind_speed:.1f} mph",
-                inline=False
+                    f"Conditions: {most_common_cond}\n"
+                    f"Humidity: {avg_humidity:.1f}%\n"
+                    f"Wind Speed: {avg_wind_speed:.1f} mph",
+                inline=True  # Set inline to True for side-by-side display
             )
 
         await ctx.send(embed=embed)

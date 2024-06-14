@@ -412,7 +412,7 @@ async def on_message(message):
     if message.author == client.user:
         return
     if namestr.lower() in message.content.lower():
-        await message.channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
+        await message.channel.send(random_line(os.path.join(sys.path[0], 'name-quintet.txt')))
     # wotd reaction
     if swotd.lower() in message.content.lower():
         await wotdreact(message)

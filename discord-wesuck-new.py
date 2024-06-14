@@ -442,7 +442,7 @@ async def on_message(message):
             
     if namestr.lower() in message.content.lower():
         await message.channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
-        
+
     # wotd reaction
     if swotd.lower() in message.content.lower():
         await wotdreact(message)
@@ -452,6 +452,6 @@ async def on_message(message):
     if re.match(nicepattern, sequence):
         await nicereact(message)
     # we get stuck without this
-    await bot.process_commands(message)
+    await client.process_commands(message)
 
 client.run(token)

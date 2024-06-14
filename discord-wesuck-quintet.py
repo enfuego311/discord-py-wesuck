@@ -40,7 +40,7 @@ allowed_ids = [340495492377083905, 181093076960411648]
 #set activity, print successful logs
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Game(name="MY LITTLE PONY:A Maretime Bay Adventure"))
+    await client.change_presence(activity=discord.Game(name="Aliens: Dark Descent"))
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)

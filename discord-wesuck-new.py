@@ -435,7 +435,7 @@ async def repeat(ctx, channel_mention, *, message):
 @client.event
 async def on_message(message):
     if message.author == client.user:
-        
+        return
 
     if botstr.lower() in message.content.lower():
         line = random_line(os.path.join(sys.path[0], 'botmention.txt'))

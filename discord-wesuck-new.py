@@ -349,7 +349,7 @@ async def forecast(ctx, *, search):
 
         # Extract 3-day forecast data
         forecast = {}
-        today = datetime.datetime.utcnow().date()
+        today = datetime.datetime.now().date()
         tomorrow = today + datetime.timedelta(days=1)
         valid_dates = {str(today), str(tomorrow)}
 

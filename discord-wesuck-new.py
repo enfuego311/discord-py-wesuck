@@ -6,7 +6,6 @@ import datetime
 from datetime import date
 from datetime import time
 from datetime import timedelta
-import enchant
 import json
 import os
 import random
@@ -29,7 +28,6 @@ reourl = os.getenv('REOURL')
 reourl2 = os.getenv('REOURL2')
 giphy_api_key = os.getenv('GIPHY_API_KEY')
 client = commands.Bot(command_prefix='.', description="description", intents=intents)
-dictionary = enchant.Dict("en_US")
 namestr = "marcus"
 botstr = "MarcusBot"
 nicepattern = "nice"
@@ -429,26 +427,6 @@ async def forecast(ctx, *, search):
 
         await ctx.send(embed=embed)
 
-@client.command(
-    name="wtf",
-    help="Spellcheck the last thing the specified user said.",
-    brief="WTF?!"
-)
-async def wtf_command(ctx, member: discord.Member):
-    # get the previous message in the channel from the specified member
-    async for msg in ctx.channel.history(limit=2):
-        if msg.id != ctx.message.id and msg.author == member and not msg.author.bot and not msg.content.startswith('.'):
-            text = msg.content
-            # remove punctuation and split the message into words
-            words = [word.strip('.,?!') for word in text.split()]
-            # check each word for spelling errors
-            misspelled = [word for word in words if not dictionary.check(word)]
-            if len(misspelled) > 0:
-                # if misspellings were found, correct them and respond with a corrected message
-                corrected = [dictionary.suggest(word)[0] if not dictionary.check(word) else word for word in words]
-                corrected_msg = "I think {} meant to say: \"{}\"".format(member.mention, " ".join(corrected))
-                await ctx.send(corrected_msg)
-            
 @client.command(name="ip")
 async def ip(ctx):
     ip = requests.get('https://api.ipify.org').text

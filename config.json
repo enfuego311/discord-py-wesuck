@@ -2,7 +2,7 @@
   "crystal": {
     "token": "YOUR_CRYSTAL_TOKEN_HERE",
     "name": "crystal",
-    "prefix": "!",
+    "prefix": ".",
     "server_specific": {
       "display_name_file": "quintet-name.txt"
     }
@@ -10,7 +10,7 @@
   "marcus": {
     "token": "YOUR_MARCUS_TOKEN_HERE",
     "name": "marcus",
-    "prefix": "!",
+    "prefix": ".",
     "server_specific": {
       "display_name_file": "name.txt"
     }

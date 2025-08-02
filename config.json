@@ -14,5 +14,14 @@
     "server_specific": {
       "display_name_file": "name.txt"
     }
+  },
+  "plugins": {
+    "crystal": {
+      "ping": { "enabled": true },
+      "legacy_feature": { "enabled": false }
+    },
+    "marcus": {
+      "ping": { "enabled": true }
+    }
   }
 }

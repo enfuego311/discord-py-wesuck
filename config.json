@@ -17,8 +17,7 @@
   },
   "plugins": {
     "crystal": {
-      "ping": { "enabled": true },
-      "legacy_feature": { "enabled": false }
+      "ping": { "enabled": true }
     },
     "marcus": {
       "ping": { "enabled": true }

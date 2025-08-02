@@ -1,4 +1,4 @@
-# plugins package. Import plugin classes here for loader convenience.
+s# plugins package. Import plugin classes here for loader convenience.
 from .food import FoodPlugin
 from .weather import WeatherPlugin
 from .movienight import MovieNightPlugin

@@ -20,7 +20,7 @@ def create_bot_instance(name, conf):
 def main():
     config = load_config()
     for instance_name, conf in config.items():
-        token = conf.get("token")
+        token = conf.get("token")sss
         bot = create_bot_instance(instance_name, conf)
         print(f"Would start bot '{instance_name}' with its token here.")
         # bot.run(token)  # Uncomment when ready

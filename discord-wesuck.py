@@ -3,11 +3,9 @@ import aiohttp
 import asyncio
 import csv
 import datetime
-from datetime import datetime
 from datetime import date
 from datetime import time
 from datetime import timedelta
-import enchant
 import json
 import os
 import random
@@ -30,7 +28,11 @@ reourl = os.getenv('REOURL')
 reourl2 = os.getenv('REOURL2')
 giphy_api_key = os.getenv('GIPHY_API_KEY')
 client = commands.Bot(command_prefix='.', description="description", intents=intents)
-dictionary = enchant.Dict("en_US")
+namestr = "marcus"
+botstr = "MarcusBot"
+nicepattern = "nice"
+bofhpattern = "error"
+
 
 #allowed users for repeat command
 allowed_ids = [340495492377083905, 181093076960411648]
@@ -43,6 +45,19 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
+
+# Function to load responses from a text file
+def load_responses(file_path):
+    responses = {}
+    with open(file_path, 'r') as file:
+        for line in file:
+            if '::' in line:
+                keyword, response = line.strip().split('::', 1)
+                responses[keyword.strip()] = response.strip()
+    return responses
+
+# Load responses from the text file
+responses = load_responses('keyword_response.txt')
 
 # random line function for word matching
 def random_line(fname):
@@ -98,11 +113,47 @@ async def nicereact(message):
 # function that does what it says - also works for times spanning midnight
 async def is_time_between(begin_time, end_time, check_time=None):
     # If check time is not given, default to current time
-    check_time = check_time or datetime.now().time()
+    check_time = check_time or datetime.datetime.now().time()
     if begin_time < end_time:
         return check_time >= begin_time and check_time <= end_time
     else: # crosses midnight
         return check_time >= begin_time or check_time <= end_time
+
+# food
+@client.command()
+async def food(ctx, upc_code: str):
+    if not upc_code:
+        await ctx.send('Please provide a UPC code.')
+        return
+
+    # Fetch nutrition information using the Open Food Facts API
+    url = f"https://world.openfoodfacts.org/api/v0/product/{upc_code}.json"
+    response = requests.get(url)
+    data = response.json()
+
+    if data.get('status') != 1:
+        await ctx.send('No nutrition information found for the provided UPC code.')
+        return
+
+    product = data['product']
+    embed = discord.Embed(
+        title=product.get('product_name', 'Unknown Product'),
+        description=f"Nutrition information for {product.get('product_name', 'this product')}",
+        color=0x00ff00
+    )
+    embed.add_field(name="Brand", value=product.get('brands', 'N/A'), inline=False)
+    embed.add_field(name="Serving Size", value=product.get('serving_size', 'N/A'), inline=False)
+    embed.add_field(name="Calories", value=product.get('nutriments', {}).get('energy-kcal_100g', 'N/A'), inline=True)
+    embed.add_field(name="Total Fat", value=product.get('nutriments', {}).get('fat_100g', 'N/A'), inline=True)
+    embed.add_field(name="Saturated Fat", value=product.get('nutriments', {}).get('saturated-fat_100g', 'N/A'), inline=True)
+    embed.add_field(name="Cholesterol", value=product.get('nutriments', {}).get('cholesterol_100g', 'N/A'), inline=True)
+    embed.add_field(name="Sodium", value=product.get('nutriments', {}).get('sodium_100g', 'N/A'), inline=True)
+    embed.add_field(name="Total Carbohydrates", value=product.get('nutriments', {}).get('carbohydrates_100g', 'N/A'), inline=True)
+    embed.add_field(name="Dietary Fiber", value=product.get('nutriments', {}).get('fiber_100g', 'N/A'), inline=True)
+    embed.add_field(name="Sugars", value=product.get('nutriments', {}).get('sugars_100g', 'N/A'), inline=True)
+    embed.add_field(name="Protein", value=product.get('nutriments', {}).get('proteins_100g', 'N/A'), inline=True)
+
+    await ctx.send(embed=embed)
 
 # clap!👏
 @client.command(
@@ -185,7 +236,11 @@ async def wotd(ctx):
 async def ywotd(ctx):
     await ctx.send("Yesterday's word of the day was: **" + sywotd + "**")
 
-@client.command(name='driveway')
+@client.command(
+    name='driveway',
+    help='This is a live pic of a driveway. Somewhere.',
+    brief='A driveway'
+)
 async def driveway(ctx):
 
     # Download the image data using requests
@@ -203,7 +258,11 @@ async def driveway(ctx):
     # Send the message with the embedded file
     await ctx.send(file=discord.File(file), embed=embed)
 
-@client.command(name='backyard')
+@client.command(
+    name='backyard',
+    help='This is a live pic of a back yard. Somewhere.',
+    brief='A back yard'
+)
 async def backyard(ctx):
 
     # Download the image data using requests
@@ -221,7 +280,11 @@ async def backyard(ctx):
     # Send the message with the embedded file
     await ctx.send(file=discord.File(file), embed=embed)
 
-@client.command(name='sgif')
+@client.command(
+    name='sgif',
+    help='Gets the top result from giphy',
+    brief='Giphy top result'
+)
 async def search_gif(ctx, *args):
     # Parse the user's input to extract the search query
     search_query = ' '.join(args)
@@ -235,7 +298,11 @@ async def search_gif(ctx, *args):
     embed.set_image(url=gif_url)
     await ctx.send(embed=embed)
 
-@client.command(name='ping')
+@client.command(
+    name='ping',
+    help='Check latency from bot to the host provided.',
+    brief='Ping IP'
+)
 async def ping_host(ctx, host):
     try:
         # Run the ping command and capture the output
@@ -298,7 +365,7 @@ async def weather(ctx, *, search):
     help="This will query the Google Maps API to get the latitude and longitude. Using that it will query the OpenWeather API for a local forecast.",
     brief="Forecast for the location specified."
 )
-async def weather(ctx, *, search):
+async def forecast(ctx, *, search):
     async with aiohttp.ClientSession() as session:
         search = search.replace(' ', '+')
         # Get the latitude and longitude
@@ -316,8 +383,14 @@ async def weather(ctx, *, search):
 
         # Extract 3-day forecast data
         forecast = {}
+        today = datetime.datetime.now().date()
+        tomorrow = today + datetime.timedelta(days=1)
+        valid_dates = {str(today), str(tomorrow)}
+
         for entry in forecastdata['list']:
             date = entry['dt_txt'].split(' ')[0]
+            if date not in valid_dates:
+                continue
             if date not in forecast:
                 forecast[date] = {
                     'temp': [],
@@ -331,11 +404,9 @@ async def weather(ctx, *, search):
             forecast[date]['conditions'].append(entry['weather'][0]['description'])
             forecast[date]['humidity'].append(entry['main']['humidity'])
             forecast[date]['wind_speed'].append(entry['wind']['speed'])
-            if len(forecast) == 3:
-                break
 
         # Prepare the embed message
-        embed = discord.Embed(title=f"3-Day Weather Forecast for {geodata['results'][0]['formatted_address']}", colour=discord.Colour.blue())
+        embed = discord.Embed(title=f"Weather Forecast for {geodata['results'][0]['formatted_address']}", colour=discord.Colour.blue())
         embed.set_image(url=locmapurl)
 
         for date, data in forecast.items():
@@ -348,133 +419,55 @@ async def weather(ctx, *, search):
             embed.add_field(
                 name=date,
                 value=f"High: {hi_temp:.1f}F, Low: {lo_temp:.1f}F\n"
-                      f"Conditions: {most_common_cond}\n"
-                      f"Humidity: {avg_humidity:.1f}%\n"
-                      f"Wind Speed: {avg_wind_speed:.1f} mph",
-                inline=False
+                    f"Conditions: {most_common_cond}\n"
+                    f"Humidity: {avg_humidity:.1f}%\n"
+                    f"Wind Speed: {avg_wind_speed:.1f} mph",
+                inline=True  # Set inline to True for side-by-side display
             )
 
         await ctx.send(embed=embed)
-
-@client.command(name="wtf")
-async def wtf_command(ctx, member: discord.Member):
-    # get the previous message in the channel from the specified member
-    async for msg in ctx.channel.history(limit=2):
-        if msg.id != ctx.message.id and msg.author == member and not msg.author.bot and not msg.content.startswith('.'):
-            text = msg.content
-            # remove punctuation and split the message into words
-            words = [word.strip('.,?!') for word in text.split()]
-            # check each word for spelling errors
-            misspelled = [word for word in words if not dictionary.check(word)]
-            if len(misspelled) > 0:
-                # if misspellings were found, correct them and respond with a corrected message
-                corrected = [dictionary.suggest(word)[0] if not dictionary.check(word) else word for word in words]
-                corrected_msg = "I think {} meant to say: \"{}\"".format(member.mention, " ".join(corrected))
-                await ctx.send(corrected_msg)
-            return
 
 @client.command(name="ip")
 async def ip(ctx):
     ip = requests.get('https://api.ipify.org').text
     await ctx.send(f"My public IP: {ip}")
-
+    
 @client.command(name="repeat")
 async def repeat(ctx, channel_mention, *, message):
     if ctx.author.id not in allowed_ids:
         await ctx.send("You are not allowed to use this command.")
-        return
-
+        
     channel_id = re.findall(r'\d+', channel_mention)[0]
     channel = client.get_channel(int(channel_id))
     await channel.send(message)
-
-# match various patterns including word of the day and respond with
-# either random lines or react to wotd with emoji
+    
 @client.event
 async def on_message(message):
-    nicepattern = r".*\bnice\b\W*"
-    moviestr = "movie night"
-    herzogstr = "herzog"
-    herstr = "amanda"
-    kartstr = "kart"
-    mariostr = "mario game"
-    ff2str = "ff2"
-    typongstr = "typong"
-    ffstr = "final fantasy"
-    neatostr = "neato"
-    zeldastr = "zelda"
-    titwstr = "this is the way"
-    bofhpattern = r".*\berror\b\W*"
-    daystr = "what a day"
-
-    # this is the *real* bot username - not the nickname
-    botstr = client.user.name
-
-    # what channel is this? needed for channel.send
-    channel = message.channel
-
     if message.author == client.user:
         return
 
-    # reacts to namestr if not botstr
-    if (namestr.lower() in message.content.lower()) and (botstr.lower() not in message.content.lower()):
-        await channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
     if botstr.lower() in message.content.lower():
         line = random_line(os.path.join(sys.path[0], 'botmention.txt'))
         response = line.replace("BOT", botstr)
-        await channel.send(response)
-    
+        await message.channel.send(response)
+        return
+        
+    for keyword, response in responses.items():
+        if keyword in message.content.lower():
+            await message.channel.send(response)
+            
+    if namestr.lower() in message.content.lower():
+        await message.channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
+
     # wotd reaction
     if swotd.lower() in message.content.lower():
         await wotdreact(message)
-
+        
     # nice reaction
     sequence = message.content.lower()
     if re.match(nicepattern, sequence):
         await nicereact(message)
-
-    # bofh regex
-    if re.match(bofhpattern, sequence):
-        await channel.send(random_line(os.path.join(sys.path[0], 'bofh.txt')))
-
-    # other word matches with static and random line responses below
-    if moviestr.lower() in message.content.lower():
-        await channel.send(random_line(os.path.join(sys.path[0], 'movienight.txt')))
-
-    if herzogstr.lower() in message.content.lower():
-        await channel.send(random_line(os.path.join(sys.path[0], 'herzog.txt')))
-
-    if herstr.lower() in message.content.lower():
-        await channel.send("At least until operation: kill wife and kids")
-
-    if kartstr.lower() in message.content.lower():
-        await channel.send("**Official We Suck Mario Kart Ranking** - 8 > 64 > SNES > DD > 7 > Wii > DS > GBA")
-    
-    if mariostr.lower() in message.content.lower():
-        await channel.send("**Official We Suck Super Mario Ranking** - Odyssey > 64 > World > 3 > World 2 = Galaxy = Galaxy 2 = Fury > 3D World > 3D Land > Sunshine > 1 > 2 = Land 2 > New DS = New Wii > New U > New 2 > Land > Lost")
-    
-    if ff2str.lower() in message.content.lower():
-        await channel.send("The thing about civilization is that we are all 72 hours away from pure cannibalistic anarchy. That clock gets reset everytime we eat, everytiem we sleep but all of life as know it are on a precipice. FF2 was about 48 hrs for me. Everything you know and care about means nothing. That's the reality of culture and civilzation. It's an absolute cosmic shadow held up by essentially nothing. Final fantasy 2 taught me that.")
-    
-    if typongstr.lower() in message.content.lower():
-       await channel.send("Don't make fun of my typong")
-    
-    if ffstr.lower() in message.content.lower():
-        await channel.send("**Official We Suck Final Fantasy Ranking** - FF7R > FF6 > FF7 > FF9 > FF10 > FF15 > FF4 > FF12 > FF5 > FF10-2 > FF3 > FF1 > FF8 > MQ > FF2 > FF13")
-
-    if neatostr.lower() in message.content.lower():
-       await channel.send("neato burrito")
-
-    if zeldastr.lower() in message.content.lower():
-       await channel.send("**Official We Suck Zelda Ranking** - BotW > Minish > ALBW > ALttP > LA = WW > OoT > Oracle > MM > LoZ > TP > SS > AoL = PH > FSA > ST = TFH")
-    
-    if titwstr.lower() in message.content.lower():
-        await channel.send("This is the way.")
-    
-    if daystr.lower() in message.content.lower():
-        await channel.send("Tell me about it")
-        
-    # this keeps us from getting stuck in this function
+    # we get stuck without this
     await client.process_commands(message)
 
 client.run(token)

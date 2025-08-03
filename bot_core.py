@@ -23,7 +23,7 @@ def main():
         token = conf.get("token")
         bot = create_bot_instance(instance_name, conf)
         print(f"Would start bot '{instance_name}' with its token here.")
-        # bot.run(token)  # Uncomment when ready
+        bot.run(token)  # Uncomment when ready
 
 if __name__ == "__main__":
     main()

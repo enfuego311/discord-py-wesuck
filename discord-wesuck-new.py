@@ -6,6 +6,7 @@ import datetime
 from datetime import date
 from datetime import time
 from datetime import timedelta
+from datetime import datetime as dt
 import json
 import os
 import random
@@ -363,88 +364,20 @@ async def weather(ctx, *, search):
     await session2.close()
     await ctx.send(embed=embed)
 
-@client.command(
-    name="forecast",
-    pass_context=True,
-    help="This will query the Google Maps API to get the latitude and longitude. Using that it will query the OpenWeather API for a local forecast.",
-    brief="Forecast for the location specified."
-)
-async def forecast(ctx, *, search):
-    async with aiohttp.ClientSession() as session:
-        search = search.replace(' ', '+')
-        # Get the latitude and longitude
-        georesp = await session.get('https://maps.googleapis.com/maps/api/geocode/json?key=' + googleapi + '&address=' + search, ssl=False)
-        geodata = json.loads(await georesp.text())
-        geolat = str(geodata['results'][0]['geometry']['location']['lat'])
-        geolon = str(geodata['results'][0]['geometry']['location']['lng'])
-        
-        # Get the 3-day weather forecast
-        forecastresp = await session.get(f'http://api.openweathermap.org/data/2.5/forecast?appid={weatherapi}&lat={geolat}&lon={geolon}&units=imperial')
-        forecastdata = json.loads(await forecastresp.text())
-
-        # Create the map URL for the embed
-        locmapurl = f'https://maps.googleapis.com/maps/api/staticmap?center={geolat},{geolon}&zoom=11&size=600x300&key={googleapi}'
-
-        # Extract 3-day forecast data
-        forecast = {}
-        today = datetime.datetime.now().date()
-        tomorrow = today + datetime.timedelta(days=1)
-        valid_dates = {str(today), str(tomorrow)}
-
-        for entry in forecastdata['list']:
-            date = entry['dt_txt'].split(' ')[0]
-            if date not in valid_dates:
-                continue
-            if date not in forecast:
-                forecast[date] = {
-                    'temp': [],
-                    'feels_like': [],
-                    'conditions': [],
-                    'humidity': [],
-                    'wind_speed': []
-                }
-            forecast[date]['temp'].append(entry['main']['temp'])
-            forecast[date]['feels_like'].append(entry['main']['feels_like'])
-            forecast[date]['conditions'].append(entry['weather'][0]['description'])
-            forecast[date]['humidity'].append(entry['main']['humidity'])
-            forecast[date]['wind_speed'].append(entry['wind']['speed'])
-
-        # Prepare the embed message
-        embed = discord.Embed(title=f"Weather Forecast for {geodata['results'][0]['formatted_address']}", colour=discord.Colour.blue())
-        embed.set_image(url=locmapurl)
-
-        for date, data in forecast.items():
-            hi_temp = max(data['temp'])
-            lo_temp = min(data['temp'])
-            most_common_cond = max(set(data['conditions']), key=data['conditions'].count)
-            avg_humidity = sum(data['humidity']) / len(data['humidity'])
-            avg_wind_speed = sum(data['wind_speed']) / len(data['wind_speed'])
-
-            embed.add_field(
-                name=date,
-                value=f"High: {hi_temp:.1f}F, Low: {lo_temp:.1f}F\n"
-                    f"Conditions: {most_common_cond}\n"
-                    f"Humidity: {avg_humidity:.1f}%\n"
-                    f"Wind Speed: {avg_wind_speed:.1f} mph",
-                inline=True  # Set inline to True for side-by-side display
-            )
-
-        await ctx.send(embed=embed)
-
 @client.command(name="ip")
 async def ip(ctx):
     ip = requests.get('https://api.ipify.org').text
     await ctx.send(f"My public IP: {ip}")
-    
+
 @client.command(name="repeat")
 async def repeat(ctx, channel_mention, *, message):
     if ctx.author.id not in allowed_ids:
         await ctx.send("You are not allowed to use this command.")
-        
+
     channel_id = re.findall(r'\d+', channel_mention)[0]
     channel = client.get_channel(int(channel_id))
     await channel.send(message)
-    
+
 @client.event
 async def on_message(message):
     if message.author == client.user:
@@ -455,18 +388,18 @@ async def on_message(message):
         response = line.replace("BOT", botstr)
         await message.channel.send(response)
         return
-        
+
     for keyword, response in responses.items():
         if keyword in message.content.lower():
             await message.channel.send(response)
-            
+
     if namestr.lower() in message.content.lower():
         await message.channel.send(random_line(os.path.join(sys.path[0], 'name.txt')))
 
     # wotd reaction
     if swotd.lower() in message.content.lower():
         await wotdreact(message)
-        
+
     # nice reaction
     sequence = message.content.lower()
     if re.match(nicepattern, sequence):
@@ -531,7 +464,7 @@ async def fetch_and_plot_forecast(lat, lon):
     return buf
 
 # Add this new command to call the forecast image
-@client.command(name="forecastimg", help="Image forecast for the next 36h.")
+@client.command(name="forecast", help="Image forecast for the next 36h.")
 async def forecastimg(ctx, *, search):
     async with aiohttp.ClientSession() as session:
         search = search.replace(' ', '+')
@@ -551,5 +484,5 @@ async def forecastimg(ctx, *, search):
         await ctx.send(file=file, embed=embed)
     except Exception as e:
         await ctx.send(f"⚠️ Error generating forecast: {e}")
-        
+
 client.run(token)

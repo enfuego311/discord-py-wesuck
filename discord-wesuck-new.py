@@ -16,6 +16,10 @@ import subprocess
 import sys
 from discord.ext import commands
 import discord
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+
+
 intents = discord.Intents.all()
 intents.typing = False
 intents.presences = False
@@ -469,5 +473,83 @@ async def on_message(message):
         await nicereact(message)
     # we get stuck without this
     await client.process_commands(message)
+async def fetch_and_plot_forecast(lat, lon):
+    url = "https://api.openweathermap.org/data/3.0/onecall"
+    params = {
+        "lat": lat,
+        "lon": lon,
+        "appid": weatherapi,
+        "units": "imperial",
+        "exclude": "minutely,daily,alerts,current"
+    }
+    resp = requests.get(url, params=params, timeout=8)
+    resp.raise_for_status()
+    data = resp.json()
+    hourly = data.get("hourly", [])[:36]
+    offset = data.get("timezone_offset", 0)
 
+    times, temps, volumes = [], [], []
+    for h in hourly:
+        ts = h["dt"] + offset
+        t = dt.utcfromtimestamp(ts)
+        times.append(t)
+        temps.append(h["temp"])
+        vol = 0.0
+        if "rain" in h:
+            vol += h["rain"].get("1h", 0.0)
+        if "snow" in h:
+            vol += h["snow"].get("1h", 0.0)
+        volumes.append(vol)
+
+    plt.style.use("dark_background")
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 6), tight_layout=True)
+
+    ax1.plot(times, temps, marker='o', color='skyblue')
+    ax1.set_title("Next 36h Temperature Forecast", fontsize=12)
+    ax1.set_ylabel("Temp (°F)")
+    ax1.grid(True, linestyle='--', alpha=0.5)
+    ax1.xaxis.set_major_formatter(mdates.DateFormatter('%I %p'))
+
+    ax1.scatter(times[0], temps[0], color='white', s=100, zorder=5, marker='*')
+    ax1.text(times[0], temps[0], f" {temps[0]:.1f}°F", color='white', fontweight='bold')
+
+    ax2.bar(times, volumes, width=0.03, color='deepskyblue')
+    ax2.set_title("Precipitation Volume (next 36h)", fontsize=12)
+    ax2.set_ylabel("Volume (in)")
+    ax2.grid(True, linestyle='--', alpha=0.5)
+    ax2.xaxis.set_major_formatter(mdates.DateFormatter('%I %p'))
+
+    for ax in [ax1, ax2]:
+        ax.tick_params(axis='x', labelrotation=45)
+        for spine in ax.spines.values():
+            spine.set_color("#444f6b")
+
+    buf = BytesIO()
+    fig.savefig(buf, format='png', bbox_inches='tight')
+    buf.seek(0)
+    plt.close(fig)
+    return buf
+
+# Add this new command to call the forecast image
+@client.command(name="forecastimg", help="Image forecast for the next 36h.")
+async def forecastimg(ctx, *, search):
+    async with aiohttp.ClientSession() as session:
+        search = search.replace(' ', '+')
+        geo_url = f'https://maps.googleapis.com/maps/api/geocode/json?key={googleapi}&address={search}'
+        async with session.get(geo_url, ssl=False) as georesp:
+            geodata = await georesp.json()
+            location = geodata['results'][0]
+            lat = location['geometry']['location']['lat']
+            lon = location['geometry']['location']['lng']
+            formatted_address = location['formatted_address']
+
+    try:
+        img_buf = await fetch_and_plot_forecast(lat, lon)
+        file = discord.File(img_buf, filename="forecast.png")
+        embed = discord.Embed(title=f"36h Forecast for {formatted_address}", color=discord.Color.blue())
+        embed.set_image(url="attachment://forecast.png")
+        await ctx.send(file=file, embed=embed)
+    except Exception as e:
+        await ctx.send(f"⚠️ Error generating forecast: {e}")
+        
 client.run(token)

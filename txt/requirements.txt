@@ -4,4 +4,3 @@ aiocfscrape
 pyspellchecker
 pyenchant
 langdetect
-

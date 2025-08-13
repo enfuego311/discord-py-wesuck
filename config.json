@@ -14,5 +14,25 @@
     "server_specific": {
       "display_name_file": "name.txt"
     }
+  },
+  "plugins": {
+    "crystal": {
+      "food": { "enabled": true },
+      "weather": { "enabled": true },
+      "movienight": { "enabled": true },
+      "keyword_response": { "enabled": true },
+      "fun_commands": { "enabled": true },
+      "utility": { "enabled": true },
+      "image_commands": { "enabled": true }
+    },
+    "marcus": {
+      "food": { "enabled": true },
+      "weather": { "enabled": true },
+      "movienight": { "enabled": true },
+      "keyword_response": { "enabled": true },
+      "fun_commands": { "enabled": true },
+      "utility": { "enabled": true },
+      "image_commands": { "enabled": true }
+    }
   }
 }
